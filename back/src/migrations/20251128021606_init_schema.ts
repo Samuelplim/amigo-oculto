@@ -45,5 +45,4 @@ export async function down(knex: Knex): Promise<void> {
 	await knex.schema.dropTableIfExists('sorteio');
 	await knex.schema.dropTableIfExists('participante');
 	await knex.schema.dropTableIfExists('usuario');
-}
 
