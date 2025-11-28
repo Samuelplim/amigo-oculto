@@ -15,12 +15,10 @@ export class SorteioController {
   }
 
   static async create(req: Request, res: Response) {
-    const { id_participante, data_realizacao, id_participante_sorteado, local } = req.body;
+    const { id_participante, id_participante_sorteado } = req.body;
     const novoSorteio: Sorteio = {
       id_participante,
-      data_realizacao,
       id_participante_sorteado,
-      local
     };
     sorteios.push(novoSorteio);
     res.status(201).json(novoSorteio);
@@ -30,9 +28,7 @@ export class SorteioController {
     const sorteio = sorteios.find(s => s.id_participante === req.params.id_participante);
     if (!sorteio) return res.status(404).json({ message: 'Sorteio não encontrado' });
     const { data_realizacao, id_participante_sorteado, local } = req.body;
-    sorteio.data_realizacao = data_realizacao ?? sorteio.data_realizacao;
     sorteio.id_participante_sorteado = id_participante_sorteado ?? sorteio.id_participante_sorteado;
-    sorteio.local = local ?? sorteio.local;
     return res.json(sorteio);
   }
 
