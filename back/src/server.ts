@@ -1,5 +1,7 @@
 ﻿import app from './index';
 
+const PORT = process.env.PORT || 4000;
 
-
-export default app;
+app.listen(PORT, () => {
+	console.log(`Servidor rodando na porta ${PORT}`);
+});
