@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { Sorteio } from '../models/Sorteio';
 
+
+
 const sorteios: Sorteio[] = [];
 
 export class SorteioController {
@@ -38,4 +40,6 @@ export class SorteioController {
     sorteios.splice(index, 1);
     return res.status(204).send();
   }
+
+
 }

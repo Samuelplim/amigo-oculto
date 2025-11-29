@@ -14,7 +14,6 @@ app.use('/api/participantes', participanteRoutes);
 app.use('/api/presentes', presenteRoutes);
 app.use('/api/sorteios', sorteioRoutes);
 
-// Health check
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
