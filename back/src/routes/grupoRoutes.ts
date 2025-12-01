@@ -1,16 +1,16 @@
-import router from "./usuarioRoutes";
-import { GrupoSorteioController } from '../controllers/GrupoSorteioController';
 import { Router } from 'express';
+import { GrupoSorteioController } from '../controllers/GrupoController';
 
-const grupoRouter = Router();
+const router = Router();
 
+router.get('/', GrupoSorteioController.getAll);
+router.get('/:id', GrupoSorteioController.getById);
+router.post('/', GrupoSorteioController.create);
+router.post('/:id/participantes', GrupoSorteioController.addParticipante);
+router.put('/:id/participantes/:participanteId', GrupoSorteioController.updateParticipante);
+router.delete('/:id/participantes/:participanteId', GrupoSorteioController.deleteParticipante);
+router.post('/:id/sortear', GrupoSorteioController.sortear);
+router.delete('/:id', GrupoSorteioController.delete);
 
-router.get('/grupos', GrupoSorteioController.getAll);
-router.get('/grupos/:id', GrupoSorteioController.getById);
-router.post('/grupos', GrupoSorteioController.create);
-router.post('/grupos/:id/participantes', GrupoSorteioController.addParticipante);
-router.put('/grupos/:id/participantes/:participanteId', GrupoSorteioController.updateParticipante);
-router.delete('/grupos/:id/participantes/:participanteId', GrupoSorteioController.deleteParticipante);
-router.post('/grupos/:id/sortear', GrupoSorteioController.sortear);
 
 export default router;
