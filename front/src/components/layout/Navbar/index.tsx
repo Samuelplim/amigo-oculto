@@ -10,6 +10,7 @@ export const Navbar = () => {
               { href: '/', label: 'Inicio', icon: FaHome },
               { href: '/participantes', label: 'Participantes', icon: FaUsers },
               { href: '/evento', label: 'Evento', icon: FaPen },
+              { href: '/presentes', label: 'Presentes', icon: FaGifts },
           ]
         : [
               { href: '/', label: 'Inicio', icon: FaHome },
