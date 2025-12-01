@@ -1,0 +1,12 @@
+import * as React from 'react';
+
+const ContentCopy = (props: React.SVGAttributes<SVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#1f1f1f" viewBox="0 -960 960 960" {...props}>
+        <path
+            fill="currentColor"
+            d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240zm0-80h360v-480H360zM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80zm160-240v-480z"
+        ></path>
+    </svg>
+);
+
+export { ContentCopy };
