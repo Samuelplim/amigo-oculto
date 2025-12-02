@@ -14,7 +14,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/participantes', participanteRoutes);
 app.use('/api/presentes', presenteRoutes);
 app.use('/api/sorteios', sorteioRoutes);
-app.use('/api/grupos', grupoRoutes); 
+app.use('/api/grupos', grupoRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is running' });
