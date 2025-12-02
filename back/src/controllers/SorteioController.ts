@@ -77,7 +77,7 @@ export class SorteioController {
       
       const novoSorteio = await prisma.sorteio.create({
         data: {
-          grupoId,
+          grupoId: Number(grupoId),
           participanteId,
           participanteSorteadoId
         }
@@ -108,7 +108,7 @@ export class SorteioController {
       const { grupoId } = req.params;
       
       const sorteios = await prisma.sorteio.findMany({
-        where: { grupoId },
+        where: { grupoId: Number(grupoId) },
         include: {
           participante: {
             select: {

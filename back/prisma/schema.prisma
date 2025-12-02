@@ -2,12 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Usuario {
@@ -23,38 +23,40 @@ model Participante {
   nome             String
   senha            String?
   description      String?
-  evento           String
   created          DateTime @default(now())
   updated          DateTime @updatedAt
+  eventoId        Int?
   
   // Relacionamentos
   presentes        Presente[]
   sorteiosFeitos   Sorteio[] @relation("ParticipanteSorteador")
   sorteiosRecebidos Sorteio[] @relation("ParticipanteSorteado")
   grupos           GrupoParticipante[]
+  evento          Evento? @relation(fields: [eventoId], references: [id], onDelete: Cascade)
 
   @@map("participantes")
 }
 
-model GrupoSorteio {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+model Evento {
+  id            Int      @id @default(autoincrement())
   nome          String
   created       DateTime @default(now())
   updated       DateTime @updatedAt
   
   // Relacionamentos
   participantes GrupoParticipante[]
+  participantesDiretos Participante[]
   sorteios      Sorteio[]
 
-  @@map("grupos_sorteio")
+  @@map("eventos")
 }
 
 model GrupoParticipante {
   id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  grupoId         String        @db.Uuid
+  grupoId         Int
   participanteId  String        @db.Uuid
   
-  grupo           GrupoSorteio  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  grupo           Evento  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
   participante    Participante  @relation(fields: [participanteId], references: [id], onDelete: Cascade)
   
   @@unique([grupoId, participanteId])
@@ -75,12 +77,12 @@ model Presente {
 
 model Sorteio {
   id                        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  grupoId                   String        @db.Uuid
+  grupoId                   Int
   participanteId            String        @db.Uuid
   participanteSorteadoId    String        @db.Uuid
   created                   DateTime      @default(now())
   
-  grupo                     GrupoSorteio  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  grupo                     Evento  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
   participante              Participante  @relation("ParticipanteSorteador", fields: [participanteId], references: [id], onDelete: Cascade)
   participanteSorteado      Participante  @relation("ParticipanteSorteado", fields: [participanteSorteadoId], references: [id], onDelete: Cascade)
   

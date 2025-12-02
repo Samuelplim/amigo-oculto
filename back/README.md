@@ -638,3 +638,42 @@ Para dúvidas ou sugestões, abra uma [issue](https://github.com/Samuelplim/amig
 ⭐ Se este projeto foi útil para você, considere dar uma estrela!
 
 **Desenvolvido com ❤️ usando TypeScript e Node.js**
+
+## Relação entre GrupoController e SorteioController
+
+### 1. GrupoController
+
+**Responsável por:** Gerenciar os grupos (chamados de evento no banco), seus participantes e o sorteio entre eles.
+
+**Principais funções:**
+- **getAll / getById:** Retornam grupos e, junto, os participantes e os sorteios já realizados naquele grupo.
+- **create:** Cria um novo grupo/evento e já pode adicionar participantes.
+- **addParticipante / removeParticipante:** Adiciona ou remove participantes de um grupo.
+- **realizarSorteio:** Realiza o sorteio dos participantes do grupo, garantindo que ninguém tire a si mesmo. Salva os resultados na tabela de sorteios.
+- **getSorteioParticipante:** Busca o resultado do sorteio para um participante específico de um grupo.
+
+**Como usa o sorteio:** O GrupoController é quem dispara o sorteio (função realizarSorteio), criando vários registros na tabela de sorteios, um para cada participante, dizendo quem tirou quem.
+
+### 2. SorteioController
+
+**Responsável por:** Gerenciar e consultar os registros de sorteios já realizados.
+
+**Principais funções:**
+- **getAll / getById:** Listam todos os sorteios ou um sorteio específico, trazendo informações do grupo, do participante e de quem ele tirou.
+- **create:** Cria um sorteio individual (não é o fluxo principal, pois normalmente o sorteio é feito em lote pelo GrupoController).
+- **delete:** Remove um sorteio.
+- **getByGrupo:** Lista todos os sorteios de um grupo específico.
+
+**Como se relaciona com o grupo:** Cada sorteio está vinculado a um grupo (grupoId), a um participante (quem está participando) e ao participante sorteado (quem ele tirou). O SorteioController permite consultar esses dados de forma detalhada.
+
+---
+
+## Resumindo a correlação
+
+- O **GrupoController** é o "orquestrador": ele gerencia grupos, participantes e realiza o sorteio, criando os registros na tabela de sorteios.
+- O **SorteioController** é o "consultor": ele permite consultar, listar e gerenciar os registros de sorteios já realizados, mostrando quem tirou quem em cada grupo.
+
+Ambos trabalham juntos para garantir que:
+- Os grupos tenham participantes.
+- O sorteio seja realizado corretamente.
+- Os resultados possam ser consultados depois.

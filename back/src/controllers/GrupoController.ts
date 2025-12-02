@@ -4,7 +4,7 @@ import { prisma } from '../config/database';
 export class GrupoController {
   static async getAll(req: Request, res: Response): Promise<Response> {
     try {
-      const grupos = await prisma.grupoSorteio.findMany({
+      const grupos = await prisma.evento.findMany({
         include: {
           participantes: {
             include: {
@@ -38,8 +38,8 @@ export class GrupoController {
   static async getById(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const grupo = await prisma.grupoSorteio.findUnique({
-        where: { id },
+      const grupo = await prisma.evento.findUnique({
+        where: { id: Number(id) },
         include: {
           participantes: {
             include: {
@@ -79,7 +79,7 @@ export class GrupoController {
     try {
       const { nome, participantesIds } = req.body;
       
-      const novoGrupo = await prisma.grupoSorteio.create({
+      const novoGrupo = await prisma.evento.create({
         data: {
           nome,
           participantes: {
@@ -108,8 +108,8 @@ export class GrupoController {
       const { id } = req.params;
       const { nome } = req.body;
       
-      const grupoAtualizado = await prisma.grupoSorteio.update({
-        where: { id },
+      const grupoAtualizado = await prisma.evento.update({
+        where: { id: Number(id) },
         data: { nome }
       });
       
@@ -123,8 +123,8 @@ export class GrupoController {
     try {
       const { id } = req.params;
       
-      await prisma.grupoSorteio.delete({
-        where: { id }
+      await prisma.evento.delete({
+        where: { id: Number(id) }
       });
       
       return res.status(204).send();
@@ -140,13 +140,13 @@ export class GrupoController {
       
       await prisma.grupoParticipante.create({
         data: {
-          grupoId: id!,
+          grupoId: Number(id!),
           participanteId
         }
       });
       
-      const grupo = await prisma.grupoSorteio.findUnique({
-        where: { id },
+      const grupo = await prisma.evento.findUnique({
+        where: { id: Number(id) },
         include: {
           participantes: {
             include: {
@@ -168,7 +168,7 @@ export class GrupoController {
       
       await prisma.grupoParticipante.deleteMany({
         where: {
-          grupoId: id,
+          grupoId: Number(id),
           participanteId
         }
       });
@@ -184,8 +184,8 @@ export class GrupoController {
       const { id } = req.params; // id do grupo
       
       // Buscar todos os participantes do grupo
-      const grupo = await prisma.grupoSorteio.findUnique({
-        where: { id },
+      const grupo = await prisma.evento.findUnique({
+        where: { id: Number(id) },
         include: {
           participantes: {
             include: {
@@ -234,7 +234,7 @@ export class GrupoController {
 
       // Salvar sorteios no banco
       const sorteiosData = participantes.map((participante: any, index: number) => ({
-        grupoId: id!,
+        grupoId: Number(id!),
         participanteId: participante.id,
         participanteSorteadoId: sorteados[index].id
       }));
@@ -243,8 +243,8 @@ export class GrupoController {
         data: sorteiosData
       });
 
-      const grupoAtualizado = await prisma.grupoSorteio.findUnique({
-        where: { id },
+      const grupoAtualizado = await prisma.evento.findUnique({
+        where: { id: Number(id) },
         include: {
           participantes: {
             include: {
@@ -283,7 +283,7 @@ export class GrupoController {
       const sorteio = await prisma.sorteio.findUnique({
         where: {
           grupoId_participanteId: {
-            grupoId: id!,
+            grupoId: Number(id!),
             participanteId: participanteId!
           }
         },
