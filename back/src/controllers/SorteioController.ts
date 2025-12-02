@@ -1,10 +1,32 @@
 import { Request, Response } from 'express';
-import connection from '../database/connection';
+import { prisma } from '../config/database';
 
 export class SorteioController {
   static async getAll(req: Request, res: Response): Promise<Response> {
     try {
-      const sorteios = await connection('sorteios').select('*');
+      const sorteios = await prisma.sorteio.findMany({
+        include: {
+          grupo: {
+            select: {
+              id: true,
+              nome: true
+            }
+          },
+          participante: {
+            select: {
+              id: true,
+              nome: true
+            }
+          },
+          participanteSorteado: {
+            select: {
+              id: true,
+              nome: true,
+              presentes: true
+            }
+          }
+        }
+      });
       return res.json(sorteios);
     } catch (error) {
       return res.status(500).json({ message: 'Erro ao buscar sorteios', error });
@@ -13,10 +35,31 @@ export class SorteioController {
 
   static async getById(req: Request, res: Response): Promise<Response> {
     try {
-      const { id_participante } = req.params;
-      const sorteio = await connection('sorteios')
-        .where({ id_participante })
-        .first();
+      const { id } = req.params;
+      const sorteio = await prisma.sorteio.findUnique({
+        where: { id },
+        include: {
+          grupo: {
+            select: {
+              id: true,
+              nome: true
+            }
+          },
+          participante: {
+            select: {
+              id: true,
+              nome: true
+            }
+          },
+          participanteSorteado: {
+            select: {
+              id: true,
+              nome: true,
+              presentes: true
+            }
+          }
+        }
+      });
       
       if (!sorteio) {
         return res.status(404).json({ message: 'Sorteio não encontrado' });
@@ -30,16 +73,15 @@ export class SorteioController {
 
   static async create(req: Request, res: Response): Promise<Response> {
     try {
-      const { id_participante, id_participante_sorteado } = req.body;
+      const { grupoId, participanteId, participanteSorteadoId } = req.body;
       
-      await connection('sorteios').insert({
-        id_participante,
-        id_participante_sorteado,
+      const novoSorteio = await prisma.sorteio.create({
+        data: {
+          grupoId,
+          participanteId,
+          participanteSorteadoId
+        }
       });
-      
-      const novoSorteio = await connection('sorteios')
-        .where({ id_participante })
-        .first();
       
       return res.status(201).json(novoSorteio);
     } catch (error) {
@@ -47,51 +89,46 @@ export class SorteioController {
     }
   }
 
-  static async update(req: Request, res: Response): Promise<Response> {
-    try {
-      const { id_participante } = req.params;
-      const { id_participante_sorteado } = req.body;
-      
-      const sorteio = await connection('sorteios')
-        .where({ id_participante })
-        .first();
-      
-      if (!sorteio) {
-        return res.status(404).json({ message: 'Sorteio não encontrado' });
-      }
-      
-      await connection('sorteios')
-        .where({ id_participante })
-        .update({
-          id_participante_sorteado: id_participante_sorteado ?? sorteio.id_participante_sorteado,
-          updated_at: connection.fn.now()
-        });
-      
-      const sorteioAtualizado = await connection('sorteios')
-        .where({ id_participante })
-        .first();
-      
-      return res.json(sorteioAtualizado);
-    } catch (error) {
-      return res.status(500).json({ message: 'Erro ao atualizar sorteio', error });
-    }
-  }
-
   static async delete(req: Request, res: Response): Promise<Response> {
     try {
-      const { id_participante } = req.params;
+      const { id } = req.params;
       
-      const deleted = await connection('sorteios')
-        .where({ id_participante })
-        .del();
-      
-      if (!deleted) {
-        return res.status(404).json({ message: 'Sorteio não encontrado' });
-      }
+      await prisma.sorteio.delete({
+        where: { id }
+      });
       
       return res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao excluir sorteio', error });
+      return res.status(500).json({ message: 'Erro ao deletar sorteio', error });
+    }
+  }
+
+  static async getByGrupo(req: Request, res: Response): Promise<Response> {
+    try {
+      const { grupoId } = req.params;
+      
+      const sorteios = await prisma.sorteio.findMany({
+        where: { grupoId },
+        include: {
+          participante: {
+            select: {
+              id: true,
+              nome: true
+            }
+          },
+          participanteSorteado: {
+            select: {
+              id: true,
+              nome: true,
+              presentes: true
+            }
+          }
+        }
+      });
+      
+      return res.json(sorteios);
+    } catch (error) {
+      return res.status(500).json({ message: 'Erro ao buscar sorteios do grupo', error });
     }
   }
 }

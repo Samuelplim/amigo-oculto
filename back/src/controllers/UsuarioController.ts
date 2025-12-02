@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { connection } from '../db';
+import { prisma } from '../config/database';
 
 export class UsuarioController {
   static async getAll(req: Request, res: Response): Promise<Response> {
     try {
-      const usuarios = await connection('usuarios').select('*');
+      const usuarios = await prisma.usuario.findMany();
       return res.json(usuarios);
     } catch (error) {
       return res.status(500).json({ message: 'Erro ao buscar usuários', error });
@@ -14,9 +14,9 @@ export class UsuarioController {
   static async getById(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const usuario = await connection('usuarios')
-        .where({ id })
-        .first();
+      const usuario = await prisma.usuario.findUnique({
+        where: { id: parseInt(id!) }
+      });
       
       if (!usuario) {
         return res.status(404).json({ message: 'Usuário não encontrado' });
@@ -32,14 +32,12 @@ export class UsuarioController {
     try {
       const { nome, senha } = req.body;
       
-      const [id] = await connection('usuarios').insert({
-        nome,
-        senha,
-      }).returning('id');
-      
-      const novoUsuario = await connection('usuarios')
-        .where({ id })
-        .first();
+      const novoUsuario = await prisma.usuario.create({
+        data: {
+          nome,
+          senha,
+        }
+      });
       
       return res.status(201).json(novoUsuario);
     } catch (error) {
@@ -52,25 +50,13 @@ export class UsuarioController {
       const { id } = req.params;
       const { nome, senha } = req.body;
       
-      const usuario = await connection('usuarios')
-        .where({ id })
-        .first();
-      
-      if (!usuario) {
-        return res.status(404).json({ message: 'Usuário não encontrado' });
-      }
-      
-      await connection('usuarios')
-        .where({ id })
-        .update({
-          nome: nome ?? usuario.nome,
-          senha: senha ?? usuario.senha,
-          updated_at: connection.fn.now()
-        });
-      
-      const usuarioAtualizado = await connection('usuarios')
-        .where({ id })
-        .first();
+      const usuarioAtualizado = await prisma.usuario.update({
+        where: { id: parseInt(id!) },
+        data: {
+          nome,
+          senha,
+        }
+      });
       
       return res.json(usuarioAtualizado);
     } catch (error) {
@@ -82,17 +68,13 @@ export class UsuarioController {
     try {
       const { id } = req.params;
       
-      const deleted = await connection('usuarios')
-        .where({ id })
-        .del();
-      
-      if (!deleted) {
-        return res.status(404).json({ message: 'Usuário não encontrado' });
-      }
+      await prisma.usuario.delete({
+        where: { id: parseInt(id!) }
+      });
       
       return res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao excluir usuário', error });
+      return res.status(500).json({ message: 'Erro ao deletar usuário', error });
     }
   }
 }

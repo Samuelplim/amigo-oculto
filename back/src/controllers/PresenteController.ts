@@ -1,10 +1,19 @@
 import { Request, Response } from 'express';
-import connection from '../database/connection';
+import { prisma } from '../config/database';
 
 export class PresenteController {
   static async getAll(req: Request, res: Response): Promise<Response> {
     try {
-      const presentes = await connection('presentes').select('*');
+      const presentes = await prisma.presente.findMany({
+        include: {
+          participante: {
+            select: {
+              id: true,
+              nome: true
+            }
+          }
+        }
+      });
       return res.json(presentes);
     } catch (error) {
       return res.status(500).json({ message: 'Erro ao buscar presentes', error });
@@ -14,9 +23,17 @@ export class PresenteController {
   static async getById(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const presente = await connection('presentes')
-        .where({ id })
-        .first();
+      const presente = await prisma.presente.findUnique({
+        where: { id },
+        include: {
+          participante: {
+            select: {
+              id: true,
+              nome: true
+            }
+          }
+        }
+      });
       
       if (!presente) {
         return res.status(404).json({ message: 'Presente não encontrado' });
@@ -30,18 +47,16 @@ export class PresenteController {
 
   static async create(req: Request, res: Response): Promise<Response> {
     try {
-      const { nome, id_participante } = req.body;
-      const id = crypto.randomUUID();
+      const { nome, descricao, imagem, participanteId } = req.body;
       
-      await connection('presentes').insert({
-        id,
-        nome,
-        id_participante
+      const novoPresente = await prisma.presente.create({
+        data: {
+          nome,
+          descricao,
+          imagem,
+          participanteId
+        }
       });
-      
-      const novoPresente = await connection('presentes')
-        .where({ id })
-        .first();
       
       return res.status(201).json(novoPresente);
     } catch (error) {
@@ -52,27 +67,16 @@ export class PresenteController {
   static async update(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const { nome, id_participante } = req.body;
+      const { nome, descricao, imagem } = req.body;
       
-      const presente = await connection('presentes')
-        .where({ id })
-        .first();
-      
-      if (!presente) {
-        return res.status(404).json({ message: 'Presente não encontrado' });
-      }
-      
-      await connection('presentes')
-        .where({ id })
-        .update({
-          nome: nome ?? presente.nome,
-          id_participante: id_participante ?? presente.id_participante,
-          updated_at: connection.fn.now()
-        });
-      
-      const presenteAtualizado = await connection('presentes')
-        .where({ id })
-        .first();
+      const presenteAtualizado = await prisma.presente.update({
+        where: { id },
+        data: {
+          nome,
+          descricao,
+          imagem
+        }
+      });
       
       return res.json(presenteAtualizado);
     } catch (error) {
@@ -84,17 +88,13 @@ export class PresenteController {
     try {
       const { id } = req.params;
       
-      const deleted = await connection('presentes')
-        .where({ id })
-        .del();
-      
-      if (!deleted) {
-        return res.status(404).json({ message: 'Presente não encontrado' });
-      }
+      await prisma.presente.delete({
+        where: { id }
+      });
       
       return res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao excluir presente', error });
+      return res.status(500).json({ message: 'Erro ao deletar presente', error });
     }
   }
 }

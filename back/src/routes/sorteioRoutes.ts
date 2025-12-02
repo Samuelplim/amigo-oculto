@@ -7,12 +7,10 @@ const router = Router();
 
 
 router.get('/', SorteioController.getAll);
-router.get('/:id_participante', SorteioController.getById);
-router.get('/rolando/all', (req, res) => SorteioController.getAll(req, res));
-router.get('/rolando/:id_participante', (req, res) => SorteioController.getById(req, res));
+router.get('/grupo/:grupoId', SorteioController.getByGrupo);
+router.get('/:id', SorteioController.getById);
 router.post('/', SorteioController.create);
-router.put('/:id_participante', SorteioController.update);
-router.delete('/:id_participante', SorteioController.delete);
+router.delete('/:id', SorteioController.delete);
 router.delete('/sorteado/:id_participante_sorteado', (req, res) => {
 	const { id_participante_sorteado } = req.params;
 	return res.status(501).json({ message: 'Implementar deleção por id_participante_sorteado no controller.' });

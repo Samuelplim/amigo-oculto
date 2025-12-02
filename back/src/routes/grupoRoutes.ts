@@ -1,16 +1,17 @@
 import { Router } from 'express';
-import { GrupoSorteioController } from '../controllers/GrupoController';
+import { GrupoController } from '../controllers/GrupoController';
 
 const router = Router();
 
-router.get('/', GrupoSorteioController.getAll);
-router.get('/:id', GrupoSorteioController.getById);
-router.post('/', GrupoSorteioController.create);
-router.post('/:id/participantes', GrupoSorteioController.addParticipante);
-router.put('/:id/participantes/:participanteId', GrupoSorteioController.updateParticipante);
-router.delete('/:id/participantes/:participanteId', GrupoSorteioController.deleteParticipante);
-router.post('/:id/sortear', GrupoSorteioController.sortear);
-router.delete('/:id', GrupoSorteioController.delete);
+router.get('/', GrupoController.getAll);
+router.get('/:id', GrupoController.getById);
+router.post('/', GrupoController.create);
+router.put('/:id', GrupoController.update);
+router.delete('/:id', GrupoController.delete);
+router.post('/:id/participantes', GrupoController.addParticipante);
+router.delete('/:id/participantes/:participanteId', GrupoController.removeParticipante);
+router.post('/:id/sortear', GrupoController.realizarSorteio);
+router.get('/:id/sorteio/:participanteId', GrupoController.getSorteioParticipante);
 
 
 export default router;
