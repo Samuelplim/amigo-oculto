@@ -1,12 +1,10 @@
-import { Router } from 'express';
-import { ParticipanteController } from '../controllers/ParticipanteController';
+import { Router } from "express";
+import { ParticipanteController } from "../controllers/ParticipanteController";
 
-const router = Router();
+export const participanteRoutes = Router();
 
-router.get('/', ParticipanteController.getAll);
-router.get('/:id', ParticipanteController.getById);
-router.post('/', ParticipanteController.create);
-router.put('/:id', ParticipanteController.update);
-router.delete('/:id', ParticipanteController.delete);
-
-export default router;
+participanteRoutes.get("/", ParticipanteController.getAll);
+participanteRoutes.get("/:id", ParticipanteController.getById);
+participanteRoutes.post("/", ParticipanteController.create);
+participanteRoutes.put("/:id", ParticipanteController.update);
+participanteRoutes.delete("/:id", ParticipanteController.delete);

@@ -1,12 +1,10 @@
-import { Router } from 'express';
-import { PresenteController } from '../controllers/PresenteController';
+import { Router } from "express";
+import { PresenteController } from "../controllers/PresenteController";
 
-const router = Router();
+export const presenteRoutes = Router();
 
-router.get('/', PresenteController.getAll);
-router.get('/:id', PresenteController.getById);
-router.post('/', PresenteController.create);
-router.put('/:id', PresenteController.update);
-router.delete('/:id', PresenteController.delete);
-
-export default router;
+presenteRoutes.get("/", PresenteController.getAll);
+presenteRoutes.get("/:id", PresenteController.getById);
+presenteRoutes.post("/", PresenteController.create);
+presenteRoutes.put("/:id", PresenteController.update);
+presenteRoutes.delete("/:id", PresenteController.delete);
