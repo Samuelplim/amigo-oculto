@@ -1,7 +1,6 @@
-﻿import app from './index';
+﻿import { ENV } from "./config/constant";
+import app from "./index";
 
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-	console.log(`Servidor rodando na porta ${PORT}`);
+app.listen(ENV.PORT, () => {
+  console.log(`Servidor rodando na porta ${ENV.PORT}`);
 });
