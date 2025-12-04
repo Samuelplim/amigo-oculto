@@ -1,37 +1,37 @@
-import { Request, Response } from 'express';
-import { prisma } from '../config/database';
+import { Request, Response } from "express";
+import { prisma } from "../config/database";
 
-export class GrupoController {
+export class EventoController {
   static async getAll(req: Request, res: Response): Promise<Response> {
     try {
       const grupos = await prisma.evento.findMany({
         include: {
           participantes: {
             include: {
-              participante: true
-            }
+              participante: true,
+            },
           },
           sorteios: {
             include: {
               participante: {
                 select: {
                   id: true,
-                  nome: true
-                }
+                  nome: true,
+                },
               },
               participanteSorteado: {
                 select: {
                   id: true,
-                  nome: true
-                }
-              }
-            }
-          }
-        }
+                  nome: true,
+                },
+              },
+            },
+          },
+        },
       });
       return res.json(grupos);
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao buscar grupos', error });
+      return res.status(500).json({ message: "Erro ao buscar grupos", error });
     }
   }
 
@@ -43,63 +43,64 @@ export class GrupoController {
         include: {
           participantes: {
             include: {
-              participante: true
-            }
+              participante: true,
+            },
           },
           sorteios: {
             include: {
               participante: {
                 select: {
                   id: true,
-                  nome: true
-                }
+                  nome: true,
+                },
               },
               participanteSorteado: {
                 select: {
                   id: true,
-                  nome: true
-                }
-              }
-            }
-          }
-        }
+                  nome: true,
+                },
+              },
+            },
+          },
+        },
       });
-      
+
       if (!grupo) {
-        return res.status(404).json({ message: 'Grupo não encontrado' });
+        return res.status(404).json({ message: "Grupo não encontrado" });
       }
-      
+
       return res.json(grupo);
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao buscar grupo', error });
+      return res.status(500).json({ message: "Erro ao buscar grupo", error });
     }
   }
 
   static async create(req: Request, res: Response): Promise<Response> {
     try {
       const { nome, participantesIds } = req.body;
-      
+
       const novoGrupo = await prisma.evento.create({
         data: {
           nome,
           participantes: {
-            create: participantesIds?.map((participanteId: string) => ({
-              participanteId
-            })) || []
-          }
+            create:
+              participantesIds?.map((participanteId: string) => ({
+                participanteId,
+              })) || [],
+          },
         },
         include: {
           participantes: {
             include: {
-              participante: true
-            }
-          }
-        }
+              participante: true,
+            },
+          },
+        },
       });
-      
+
       return res.status(201).json(novoGrupo);
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao criar grupo', error });
+      return res.status(500).json({ message: "Erro ao criar grupo", error });
     }
   }
 
@@ -107,29 +108,31 @@ export class GrupoController {
     try {
       const { id } = req.params;
       const { nome } = req.body;
-      
+
       const grupoAtualizado = await prisma.evento.update({
         where: { id: Number(id) },
-        data: { nome }
+        data: { nome },
       });
-      
+
       return res.json(grupoAtualizado);
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao atualizar grupo', error });
+      return res
+        .status(500)
+        .json({ message: "Erro ao atualizar grupo", error });
     }
   }
 
   static async delete(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      
+
       await prisma.evento.delete({
-        where: { id: Number(id) }
+        where: { id: Number(id) },
       });
-      
+
       return res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao deletar grupo', error });
+      return res.status(500).json({ message: "Erro ao deletar grupo", error });
     }
   }
 
@@ -137,77 +140,91 @@ export class GrupoController {
     try {
       const { id } = req.params; // id do grupo
       const { participanteId } = req.body;
-      
+
       await prisma.grupoParticipante.create({
         data: {
           grupoId: Number(id!),
-          participanteId
-        }
+          participanteId,
+        },
       });
-      
+
       const grupo = await prisma.evento.findUnique({
         where: { id: Number(id) },
         include: {
           participantes: {
             include: {
-              participante: true
-            }
-          }
-        }
+              participante: true,
+            },
+          },
+        },
       });
-      
+
       return res.json(grupo);
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao adicionar participante ao grupo', error });
+      return res
+        .status(500)
+        .json({ message: "Erro ao adicionar participante ao grupo", error });
     }
   }
 
-  static async removeParticipante(req: Request, res: Response): Promise<Response> {
+  static async removeParticipante(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
     try {
       const { id, participanteId } = req.params;
-      
+
       await prisma.grupoParticipante.deleteMany({
         where: {
           grupoId: Number(id),
-          participanteId
-        }
+          participanteId,
+        },
       });
-      
+
       return res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao remover participante do grupo', error });
+      return res
+        .status(500)
+        .json({ message: "Erro ao remover participante do grupo", error });
     }
   }
 
   static async realizarSorteio(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params; // id do grupo
-      
+
       // Buscar todos os participantes do grupo
       const grupo = await prisma.evento.findUnique({
         where: { id: Number(id) },
         include: {
           participantes: {
             include: {
-              participante: true
-            }
+              participante: true,
+            },
           },
-          sorteios: true
-        }
+          sorteios: true,
+        },
       });
 
       if (!grupo) {
-        return res.status(404).json({ message: 'Grupo não encontrado' });
+        return res.status(404).json({ message: "Grupo não encontrado" });
       }
 
       if (grupo.sorteios.length > 0) {
-        return res.status(400).json({ message: 'Sorteio já foi realizado para este grupo' });
+        return res
+          .status(400)
+          .json({ message: "Sorteio já foi realizado para este grupo" });
       }
 
-      const participantes = grupo.participantes.map((gp: any) => gp.participante);
+      const participantes = grupo.participantes.map(
+        (gp: any) => gp.participante
+      );
 
       if (participantes.length < 2) {
-        return res.status(400).json({ message: 'É necessário pelo menos 2 participantes para realizar o sorteio' });
+        return res.status(400).json({
+          message:
+            "É necessário pelo menos 2 participantes para realizar o sorteio",
+        });
       }
 
       // Algoritmo de sorteio
@@ -224,23 +241,29 @@ export class GrupoController {
         }
 
         // Verificar se ninguém tirou a si mesmo
-        sorteioValido = participantes.every((p: any, index: number) => p.id !== sorteados[index].id);
+        sorteioValido = participantes.every(
+          (p: any, index: number) => p.id !== sorteados[index].id
+        );
         tentativas++;
       }
 
       if (!sorteioValido) {
-        return res.status(500).json({ message: 'Não foi possível realizar um sorteio válido' });
+        return res
+          .status(500)
+          .json({ message: "Não foi possível realizar um sorteio válido" });
       }
 
       // Salvar sorteios no banco
-      const sorteiosData = participantes.map((participante: any, index: number) => ({
-        grupoId: Number(id!),
-        participanteId: participante.id,
-        participanteSorteadoId: sorteados[index].id
-      }));
+      const sorteiosData = participantes.map(
+        (participante: any, index: number) => ({
+          grupoId: Number(id!),
+          participanteId: participante.id,
+          participanteSorteadoId: sorteados[index].id,
+        })
+      );
 
       await prisma.sorteio.createMany({
-        data: sorteiosData
+        data: sorteiosData,
       });
 
       const grupoAtualizado = await prisma.evento.findUnique({
@@ -248,63 +271,70 @@ export class GrupoController {
         include: {
           participantes: {
             include: {
-              participante: true
-            }
+              participante: true,
+            },
           },
           sorteios: {
             include: {
               participante: {
                 select: {
                   id: true,
-                  nome: true
-                }
+                  nome: true,
+                },
               },
               participanteSorteado: {
                 select: {
                   id: true,
-                  nome: true
-                }
-              }
-            }
-          }
-        }
+                  nome: true,
+                },
+              },
+            },
+          },
+        },
       });
 
       return res.json(grupoAtualizado);
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao realizar sorteio', error });
+      return res
+        .status(500)
+        .json({ message: "Erro ao realizar sorteio", error });
     }
   }
 
-  static async getSorteioParticipante(req: Request, res: Response): Promise<Response> {
+  static async getSorteioParticipante(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
     try {
       const { id, participanteId } = req.params;
-      
+
       const sorteio = await prisma.sorteio.findUnique({
         where: {
           grupoId_participanteId: {
             grupoId: Number(id!),
-            participanteId: participanteId!
-          }
+            participanteId: participanteId!,
+          },
         },
         include: {
           participanteSorteado: {
             select: {
               id: true,
               nome: true,
-              presentes: true
-            }
-          }
-        }
+              presentes: true,
+            },
+          },
+        },
       });
 
       if (!sorteio) {
-        return res.status(404).json({ message: 'Sorteio não encontrado para este participante' });
+        return res
+          .status(404)
+          .json({ message: "Sorteio não encontrado para este participante" });
       }
 
       return res.json(sorteio);
     } catch (error) {
-      return res.status(500).json({ message: 'Erro ao buscar sorteio', error });
+      return res.status(500).json({ message: "Erro ao buscar sorteio", error });
     }
   }
 }
