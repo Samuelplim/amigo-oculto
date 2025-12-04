@@ -1,10 +1,21 @@
+import { useEffect, useState } from 'react';
 import { Container } from '../../components/Container';
 import { useSession } from '../../components/provider/session-provider';
 import { Typography } from '../../components/ui/Typography';
 
 const Participantes = () => {
+    interface Participante {
+        id: string;
+        nome: string;
+        senha: string;
+        description: string;
+        created: string;
+        updated: string;
+        eventoId: number;
+    }
     const { data } = useSession();
-    const participantes = {
+    const [participantes, setParticipantes] = useState<Participante[]>([]);
+    /*     const participantes = {
         data: [
             { id: 'foroig', name: 'Samuel Delgado', isAdmin: true, revelouPresenteado: true },
             { id: 'foroig', name: 'Ana Silva', isAdmin: false, revelouPresenteado: false },
@@ -57,15 +68,21 @@ const Participantes = () => {
             { id: 'foroig', name: 'Sérgio Costa', isAdmin: false, revelouPresenteado: true },
             { id: 'foroig', name: 'Elaine Santos', isAdmin: false, revelouPresenteado: false },
         ],
-    };
+    }; */
+
+    useEffect(() => {
+        fetch(`${import.meta.env.VITE_API_URL}/api/participantes`)
+            .then((response) => response.json())
+            .then((data) => setParticipantes(data));
+    }, []);
 
     return (
         <Container>
-            <Typography.Title>Participantes ({participantes.data.length})</Typography.Title>
+            <Typography.Title>Participantes ({participantes.length})</Typography.Title>
             {data?.user.isAdmin && (
                 <Typography.Link href={`/participantes/novo`}>Cadastrar novo participante</Typography.Link>
             )}
-            {participantes.data.map((item, index) => (
+            {participantes.map((item, index) => (
                 <div key={index}>
                     <Typography.Text>
                         {item.name} {item.isAdmin && ' 👑'}
