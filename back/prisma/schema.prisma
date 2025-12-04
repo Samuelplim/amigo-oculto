@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id    Int    @id @default(autoincrement())
+  nome  String
+  senha String
+
+  @@map("usuarios")
+}
+
+model Participante {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome             String
+  senha            String?
+  description      String?
+  created          DateTime @default(now())
+  updated          DateTime @updatedAt
+  eventoId        Int?
+  
+  // Relacionamentos
+  presentes        Presente[]
+  sorteiosFeitos   Sorteio[] @relation("ParticipanteSorteador")
+  sorteiosRecebidos Sorteio[] @relation("ParticipanteSorteado")
+  grupos           GrupoParticipante[]
+  evento          Evento? @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+
+  @@map("participantes")
+}
+
+model Evento {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  created       DateTime @default(now())
+  updated       DateTime @updatedAt
+  
+  // Relacionamentos
+  participantes GrupoParticipante[]
+  participantesDiretos Participante[]
+  sorteios      Sorteio[]
+
+  @@map("eventos")
+}
+
+model GrupoParticipante {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  grupoId         Int
+  participanteId  String        @db.Uuid
+  
+  grupo           Evento  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  participante    Participante  @relation(fields: [participanteId], references: [id], onDelete: Cascade)
+  
+  @@unique([grupoId, participanteId])
+  @@map("grupos_participantes")
+}
+
+model Presente {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nome             String
+  descricao        String?
+  imagem           String?
+  participanteId   String   @db.Uuid
+  
+  participante     Participante @relation(fields: [participanteId], references: [id], onDelete: Cascade)
+
+  @@map("presentes")
+}
+
+model Sorteio {
+  id                        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  grupoId                   Int
+  participanteId            String        @db.Uuid
+  participanteSorteadoId    String        @db.Uuid
+  created                   DateTime      @default(now())
+  
+  grupo                     Evento  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  participante              Participante  @relation("ParticipanteSorteador", fields: [participanteId], references: [id], onDelete: Cascade)
+  participanteSorteado      Participante  @relation("ParticipanteSorteado", fields: [participanteSorteadoId], references: [id], onDelete: Cascade)
+  
+  @@unique([grupoId, participanteId])
+  @@map("sorteios")
+}
