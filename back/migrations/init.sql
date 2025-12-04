@@ -8,9 +8,14 @@ CREATE SCHEMA amigos AUTHORIZATION postgres;
 
 -- DROP TABLE amigos.eventos;
 
-CREATE TABLE amigos.eventos ( nome text NOT NULL, created timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL, updated timestamp(3) NOT NULL, id serial4 NOT NULL, CONSTRAINT eventos_pkey PRIMARY KEY (id));
-
-
+CREATE TABLE amigos.eventos (
+	nome text NOT NULL,
+	created timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	updated timestamp(3) NOT NULL,
+	id serial4 NOT NULL,
+	"local" text NULL,
+	CONSTRAINT eventos_pkey PRIMARY KEY (id)
+);
 -- amigos.usuarios definição
 
 -- Drop table
