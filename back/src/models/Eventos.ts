@@ -2,6 +2,8 @@ import { Model } from "./Model";
 interface EventoType {
   id: number;
   nome: string;
+  local: string;
+  dataRealizacao: string;
   created: string;
   updated: string;
 }
