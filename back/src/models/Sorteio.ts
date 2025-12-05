@@ -18,12 +18,34 @@ export class SorteioModel extends Model {
   public static async findByEventoId(eventoId: number): Promise<SorteioType[]> {
     return this.table.where("eventoId", eventoId).select("*");
   }
-
+  public static async findByEventoIdAndParticipante(props: {
+    eventoId: number;
+    participanteId: string;
+  }): Promise<SorteioType[]> {
+    return this.table
+      .where("eventoId", props.eventoId)
+      .where("participanteId", props.participanteId)
+      .select("*")
+      .innerJoin(
+        "participantes",
+        "sorteios.participanteId",
+        "participantes.id"
+      );
+  }
   public static async create(props: {
     participanteId: string;
     participanteSorteadoId: string;
-    eventoId: string;
+    eventoId: number;
   }): Promise<{ id: number }> {
+    return await this.insert(props);
+  }
+  public static async createMany(
+    props: {
+      participanteId: string;
+      participanteSorteadoId: string;
+      eventoId: number;
+    }[]
+  ): Promise<{ id: number }> {
     return await this.insert(props);
   }
   public static async delete(props: {

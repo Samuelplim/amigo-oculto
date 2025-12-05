@@ -41,4 +41,14 @@ export class ParticipanteModel extends Model {
   public static async delete(id: string): Promise<{ id: number | string }> {
     return await this.deleteById(id);
   }
+
+  /* Fisher–Yates */
+  static sort(participantes: ParticipanteType[]) {
+    for (let i = participantes.length - 1; i > 0; i--) {
+      const random = Math.floor(Math.random() * (i + 1));
+      const temp: ParticipanteType = participantes[i]!;
+      participantes[i] = participantes[random]!;
+      participantes[random] = temp;
+    }
+  }
 }

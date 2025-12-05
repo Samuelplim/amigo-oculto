@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { SorteioModel } from "../models/Sorteio";
+import { ParticipanteModel } from "../models/Participante";
 
 export class SorteioController {
   static async getById(req: Request, res: Response): Promise<Response> {
@@ -65,109 +66,60 @@ export class SorteioController {
 
   static async realizarSorteio(req: Request, res: Response): Promise<Response> {
     try {
-      const { id } = req.params; // id do grupo
-
-      // Buscar todos os participantes do grupo
-      const grupo = await prisma.evento.findUnique({
-        where: { id: Number(id) },
-        include: {
-          participantes: {
-            include: {
-              participante: true,
-            },
-          },
-          sorteios: true,
-        },
-      });
-
-      if (!grupo) {
+      const eventoId = Number(req.params.eventoId);
+      if (!eventoId) {
+        return res.status(404).json({ message: "eventoId não informado" });
+      }
+      const participantes = await ParticipanteModel.findByEventoId(
+        Number(eventoId)
+      );
+      if (!participantes) {
         return res.status(404).json({ message: "Grupo não encontrado" });
       }
-
-      if (grupo.sorteios.length > 0) {
-        return res
-          .status(400)
-          .json({ message: "Sorteio já foi realizado para este grupo" });
-      }
-
-      const participantes = grupo.participantes.map(
-        (gp: any) => gp.participante
-      );
-
       if (participantes.length < 2) {
         return res.status(400).json({
           message:
             "É necessário pelo menos 2 participantes para realizar o sorteio",
         });
       }
-
-      // Algoritmo de sorteio
-      const sorteados = [...participantes];
-      let sorteioValido = false;
-      let tentativas = 0;
-      const maxTentativas = 100;
-
-      while (!sorteioValido && tentativas < maxTentativas) {
-        // Embaralhar array de sorteados
-        for (let i = sorteados.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [sorteados[i], sorteados[j]] = [sorteados[j], sorteados[i]];
-        }
-
-        // Verificar se ninguém tirou a si mesmo
-        sorteioValido = participantes.every(
-          (p: any, index: number) => p.id !== sorteados[index].id
-        );
-        tentativas++;
-      }
-
-      if (!sorteioValido) {
-        return res
-          .status(500)
-          .json({ message: "Não foi possível realizar um sorteio válido" });
-      }
-
-      // Salvar sorteios no banco
-      const sorteiosData = participantes.map(
-        (participante: any, index: number) => ({
-          grupoId: Number(id!),
-          participanteId: participante.id,
-          participanteSorteadoId: sorteados[index].id,
-        })
+      const sorteiosRealizados = await SorteioModel.findByEventoId(
+        Number(eventoId)
       );
+      if (sorteiosRealizados.length > 0) {
+        return res
+          .status(400)
+          .json({ message: "Sorteio já foi realizado para este grupo" });
+      }
+      const desarranjo = [...participantes];
+      ParticipanteModel.sort(desarranjo);
+      // Salvar sorteios no banco
+      const sorteiosData = desarranjo.map((participante, index, array) => {
+        if (array.length - 1 === index) {
+          const primeiroSorteado = array[0];
+          if (!primeiroSorteado) {
+            throw new Error("Erro ao realizar sorteio");
+          }
 
-      await prisma.sorteio.createMany({
-        data: sorteiosData,
+          return {
+            eventoId,
+            participanteId: participante.id,
+            participanteSorteadoId: primeiroSorteado.id,
+          };
+        }
+        const proximoSorteado = array[index + 1];
+        if (!proximoSorteado) {
+          throw new Error("Erro ao realizar sorteio");
+        }
+        return {
+          eventoId,
+          participanteId: participante.id,
+          participanteSorteadoId: proximoSorteado.id,
+        };
       });
 
-      const grupoAtualizado = await prisma.evento.findUnique({
-        where: { id: Number(id) },
-        include: {
-          participantes: {
-            include: {
-              participante: true,
-            },
-          },
-          sorteios: {
-            include: {
-              participante: {
-                select: {
-                  id: true,
-                  nome: true,
-                },
-              },
-              participanteSorteado: {
-                select: {
-                  id: true,
-                  nome: true,
-                },
-              },
-            },
-          },
-        },
-      });
+      const grupoRealizado = await SorteioModel.createMany(sorteiosData);
 
-      return res.json(grupoAtualizado);
+      return res.json(grupoRealizado);
     } catch (error) {
       return res
         .status(500)
@@ -180,24 +132,16 @@ export class SorteioController {
     res: Response
   ): Promise<Response> {
     try {
-      const { id, participanteId } = req.params;
+      const { eventoId, participanteId } = req.params;
 
-      const sorteio = await prisma.sorteio.findUnique({
-        where: {
-          grupoId_participanteId: {
-            grupoId: Number(id!),
-            participanteId: participanteId!,
-          },
-        },
-        include: {
-          participanteSorteado: {
-            select: {
-              id: true,
-              nome: true,
-              presentes: true,
-            },
-          },
-        },
+      if (!eventoId || !participanteId) {
+        return res
+          .status(404)
+          .json({ message: "eventoId ou participanteId não informado" });
+      }
+      const sorteio = await SorteioModel.findByEventoIdAndParticipante({
+        eventoId: Number(eventoId),
+        participanteId,
       });
 
       if (!sorteio) {
