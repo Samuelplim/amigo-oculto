@@ -6,7 +6,7 @@ import { alocarGrupos } from "../Services/AlocacaoService";
 export const sorteioRoutes = Router();
 
 sorteioRoutes.get("/", SorteioController.getAll);
-sorteioRoutes.get("/grupo/:grupoId", SorteioController.getByGrupo);
+sorteioRoutes.get("/grupo/:grupoId", SorteioController.getByEventoId);
 sorteioRoutes.get("/:id", SorteioController.getById);
 sorteioRoutes.post("/", SorteioController.create);
 sorteioRoutes.delete("/:id", SorteioController.delete);

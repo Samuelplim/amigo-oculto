@@ -28,10 +28,12 @@ export class PresenteModel extends Model {
   public static async update(props: {
     data: { nome: string; descricao: string; imagem: string };
     id: string;
-  }): Promise<{ id: number }> {
+  }): Promise<{ id: number | string }> {
     return await this.updateById({ data: props.data, id: props.id });
   }
-  public static async delete(props: { id: string }): Promise<{ id: number }> {
+  public static async delete(props: {
+    id: string;
+  }): Promise<{ id: number | string }> {
     return await this.deleteById(props.id);
   }
 }
