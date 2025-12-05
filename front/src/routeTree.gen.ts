@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PresentesIndexRouteImport } from './routes/presentes/index'
 import { Route as ParticipantesIndexRouteImport } from './routes/participantes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as PresentesNovoRouteImport } from './routes/presentes/novo'
 import { Route as ParticipantesNovoRouteImport } from './routes/participantes/novo'
 import { Route as LoginUserIdRouteImport } from './routes/login/$userId'
@@ -43,6 +44,11 @@ const ParticipantesIndexRoute = ParticipantesIndexRouteImport.update({
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PresentesNovoRoute = PresentesNovoRouteImport.update({
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/login/$userId': typeof LoginUserIdRoute
   '/participantes/novo': typeof ParticipantesNovoRoute
   '/presentes/novo': typeof PresentesNovoRoute
+  '/admin': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
   '/participantes': typeof ParticipantesIndexRoute
   '/presentes': typeof PresentesIndexRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/login/$userId': typeof LoginUserIdRoute
   '/participantes/novo': typeof ParticipantesNovoRoute
   '/presentes/novo': typeof PresentesNovoRoute
+  '/admin': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
   '/participantes': typeof ParticipantesIndexRoute
   '/presentes': typeof PresentesIndexRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/login/$userId': typeof LoginUserIdRoute
   '/participantes/novo': typeof ParticipantesNovoRoute
   '/presentes/novo': typeof PresentesNovoRoute
+  '/admin/': typeof AdminIndexRoute
   '/login/': typeof LoginIndexRoute
   '/participantes/': typeof ParticipantesIndexRoute
   '/presentes/': typeof PresentesIndexRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/login/$userId'
     | '/participantes/novo'
     | '/presentes/novo'
+    | '/admin'
     | '/login'
     | '/participantes'
     | '/presentes'
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/login/$userId'
     | '/participantes/novo'
     | '/presentes/novo'
+    | '/admin'
     | '/login'
     | '/participantes'
     | '/presentes'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/login/$userId'
     | '/participantes/novo'
     | '/presentes/novo'
+    | '/admin/'
     | '/login/'
     | '/participantes/'
     | '/presentes/'
@@ -155,6 +167,7 @@ export interface RootRouteChildren {
   LoginUserIdRoute: typeof LoginUserIdRoute
   ParticipantesNovoRoute: typeof ParticipantesNovoRoute
   PresentesNovoRoute: typeof PresentesNovoRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   ParticipantesIndexRoute: typeof ParticipantesIndexRoute
   PresentesIndexRoute: typeof PresentesIndexRoute
@@ -197,6 +210,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/presentes/novo': {
@@ -243,6 +263,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginUserIdRoute: LoginUserIdRoute,
   ParticipantesNovoRoute: ParticipantesNovoRoute,
   PresentesNovoRoute: PresentesNovoRoute,
+  AdminIndexRoute: AdminIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   ParticipantesIndexRoute: ParticipantesIndexRoute,
   PresentesIndexRoute: PresentesIndexRoute,
