@@ -13,7 +13,7 @@ export class LoginController {
       if (!person) {
         return res.status(401).json({ message: "Credenciais inválidas" });
       }
-      return res.json(person);
+      return res.json({ ...person, senha: undefined });
     } catch (error) {
       return res
         .status(500)
