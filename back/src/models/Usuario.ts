@@ -5,7 +5,7 @@ interface UsuarioType {
   senha: string;
 }
 export class UsuarioModel extends Model {
-  protected tableName = "usuarios";
+  static override tableName = "amigos.usuarios";
   public static async findMany(): Promise<UsuarioType[]> {
     return await this.findAll<UsuarioType>();
   }

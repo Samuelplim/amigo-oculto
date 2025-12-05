@@ -9,7 +9,7 @@ interface ParticipanteType {
   eventoId: number;
 }
 export class ParticipanteModel extends Model {
-  protected tableName = "participantes";
+  static override tableName = "amigos.participantes";
 
   public static async findById(id: string): Promise<ParticipanteType> {
     return await this.findOneById<ParticipanteType>(id);

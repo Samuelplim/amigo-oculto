@@ -8,7 +8,7 @@ interface SorteioType {
   created: string;
 }
 export class SorteioModel extends Model {
-  protected tableName = "sorteios";
+  static override tableName = "amigos.sorteios";
   public static async findMany(): Promise<SorteioType[]> {
     return await this.findAll<SorteioType>();
   }

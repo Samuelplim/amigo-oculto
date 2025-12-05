@@ -4,13 +4,17 @@ interface ById<Payload> {
   id: number | string;
 }
 export abstract class Model {
-  protected static tableName?: string;
+  static tableName: string;
 
   protected static get table() {
     if (!this.tableName) {
-      throw new Error("The table name must be defined for the model.");
+      throw new Error(
+        `The table name must be defined for the model ${
+          this.tableName
+        }. ClassName ${(this as any).name}`
+      );
     }
-    return connection(this.tableName);
+    return connection(this.tableName as string);
   }
   protected static async insert<Payload>(data: Payload): Promise<{
     id: number;

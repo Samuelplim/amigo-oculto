@@ -4,10 +4,11 @@ import { EventosModel } from "../models/Eventos";
 export class EventoController {
   static async getAll(req: Request, res: Response): Promise<Response> {
     try {
-      const grupos = await EventosModel.findMany();
-      return res.json(grupos);
+      const eventos = await EventosModel.findMany();
+      return res.json(eventos);
     } catch (error) {
-      return res.status(500).json({ message: "Erro ao buscar grupos", error });
+      console.log(error);
+      return res.status(500).json({ message: "Erro ao buscar eventos", error });
     }
   }
 

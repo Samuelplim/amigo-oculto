@@ -8,7 +8,7 @@ interface EventoType {
   updated: string;
 }
 export class EventosModel extends Model {
-  protected tableName = "eventos";
+  static override tableName: string = "amigos.eventos";
   public static async findMany(): Promise<EventoType[]> {
     return await this.findAll<EventoType>();
   }

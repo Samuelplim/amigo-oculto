@@ -7,7 +7,7 @@ interface PresenteType {
   participanteId: string;
 }
 export class PresenteModel extends Model {
-  protected tableName = "presentes";
+  static override tableName = "amigos.presentes";
 
   public static async create(presente: {
     nome: string;
