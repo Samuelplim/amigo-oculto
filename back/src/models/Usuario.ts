@@ -12,6 +12,9 @@ export class UsuarioModel extends Model {
   public static async findById(id: number): Promise<UsuarioType> {
     return await this.findOneById<UsuarioType>(id);
   }
+  public static async findByName(nome: string): Promise<UsuarioType> {
+    return await this.table.whereILike("nome", nome).first<UsuarioType>();
+  }
   public static async create(props: {
     nome: string;
     senha: string;
