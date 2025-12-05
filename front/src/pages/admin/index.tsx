@@ -6,17 +6,11 @@ import { InputText } from '../../components/ui/Input';
 import { Button } from '../../components/Button';
 
 const LoginAdmin = () => {
-    const { login, isLoading } = useSession();
+    const { login, isLoading, error } = useSession();
     const [loginName, setLoginName] = useState<string>('');
     const [password, setPassowrd] = useState<string>('');
-    const [error, setError] = useState<string | null>(null);
     const handleLogin = async () => {
-        setError(null);
-        try {
-            await login({ login: loginName, password, type: 'admin' });
-        } catch {
-            setError('Falha no login. Verifique suas credenciais.');
-        }
+        await login({ login: loginName, password, type: 'admin' });
     };
 
     return (
