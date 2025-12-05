@@ -6,8 +6,6 @@ export class LoginController {
   static async login(req: Request, res: Response): Promise<Response> {
     try {
       const { nome, senha, tipo, chave } = req.body;
-      if (!nome || !senha || !tipo) {
-      }
       const login = new Login(nome, senha, tipo, chave);
       const person = await login.realizarLogin();
       if (!person) {
