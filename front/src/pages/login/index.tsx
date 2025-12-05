@@ -4,6 +4,7 @@ import { Container } from '../../components/Container';
 import { InputText } from '../../components/ui/Input';
 import { Typography } from '../../components/ui/Typography';
 import { Button } from '../../components/Button';
+import { InputPass } from '../../components/ui/Input/InputPass';
 
 export const LoginPage = () => {
     const [loading, setLoading] = useState(false);
@@ -13,7 +14,6 @@ export const LoginPage = () => {
 
     const handleLogin = () => {
         setLoading(true);
-        // Simulate user login logic
         if (username && password) {
             setError('');
             alert('Bem-vindo, usuário!');
@@ -32,9 +32,8 @@ export const LoginPage = () => {
         <Container>
             <Typography.Title>Login de Usuário</Typography.Title>
             <InputText label="Usuário" value={username} onChange={(e) => setUsername(e.target.value)} />
-            <InputPass label="Senha" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <InputPass label="Senha" value={password} onChange={(e) => setPassword(e.target.value)} />
             <Typography.Text>{error}</Typography.Text>
-
             <Button title={loading ? 'Carregando...' : 'Entrar'} onClick={handleLogin} disabled={loading} />
         </Container>
     );
