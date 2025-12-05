@@ -1,8 +1,8 @@
-export const api = async <Payload>(props: {
+export const api = async (props: {
     url: string;
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-    body?: any;
-}): Promise<{ data: Payload; ok: boolean }> => {
+    body?: unknown;
+}): Promise<{ data: any; ok: boolean }> => {
     const response = await fetch(props.url, {
         method: props.method,
         headers: { 'Content-Type': 'application/json' },

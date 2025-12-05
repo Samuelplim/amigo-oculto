@@ -50,7 +50,6 @@ class Login {
   }
   async realizarLogin() {
     if (this.isAdmin()) {
-      console.log("realizar login admin");
       const usuario = await UsuarioModel.findByName(this.nome);
 
       return usuario;
