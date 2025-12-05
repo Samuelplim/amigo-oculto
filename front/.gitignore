@@ -16,6 +16,7 @@ docs
 .tanstack
 .env
 */src/routeTree.gen.ts
+src/routeTree.gen.ts
 
 # Editor directories and files
 .vscode/*
