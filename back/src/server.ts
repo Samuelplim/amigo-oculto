@@ -3,10 +3,10 @@ import { connection } from "./config/knexfile";
 import app from "./index";
 
 app.listen(ENV.PORT, () => {
-  console.log(`Servidor rodando na porta ${ENV.PORT}`);
+  console.log(`Servidor rodando`);
 });
 connection
-  .select("*")
+  .raw("SELECT 1")
   .then(() => {
     console.log("Banco de dados conectado com sucesso!");
   })
