@@ -1,11 +1,27 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
+import { api } from '../../services/api';
+interface ParticipanteType {
+    id: string;
+    nome: string;
+    description: string;
+    created: string;
+    updated: string;
+    eventoId: number;
+}
+
+interface UsuarioType {
+    id: number;
+    nome: string;
+    isAdmin: boolean;
+}
 
 export interface User {
     id: string;
     name: string;
     isAdmin: boolean;
+    description: string;
 }
 export interface Event {
     totalDePessoas: number;
@@ -23,42 +39,45 @@ export interface DataUser {
 }
 
 type SessionContextType = {
-    data?: DataUser;
+    data?: ParticipanteType | UsuarioType;
     isLoading: boolean;
     isAuthenticated: boolean;
     logout: () => void;
-    login: () => void;
+    error?: string;
+    login: (props: { login: string; password: string; type: 'admin' | 'participante' }) => Promise<void>;
 };
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
-    const [data, setData] = useState<DataUser | undefined>();
+    const [data, setData] = useState<ParticipanteType | UsuarioType>();
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string>('');
     const logout = () => {};
-    const login = () => {};
-    const eventoExist: Event = {
-        totalDePessoas: 50,
-        nome: 'Natal',
-        local: 'Rua XYX - Brazil',
-        sorteioRealizado: true,
-        pedendesVizualizacoes: 2,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-    };
-    const eventoNaoExist = undefined;
-    useEffect(() => {
-        async function loadAdditionalData() {
+    const login = async (props: { login: string; password: string; type: 'admin' | 'participante' }) => {
+        try {
             setIsLoading(true);
-            setData({
-                user: { id: '1', name: 'Samuel Delgado', isAdmin: true },
-                event: eventoExist,
+            const res = await api<ParticipanteType | UsuarioType>({
+                url: `${import.meta.env.VITE_API_URL}/api/login`,
+                method: 'POST',
+                body: {
+                    nome: props.login,
+                    senha: props.password,
+                    tipo: props.type,
+                },
             });
+            if (res.ok === false) {
+                setError(res.data.message);
+            }
+            console.log('Login successful:', person);
+            /*  setData({ ...person, isAdmin: props.type === 'admin' }); */
+            console.log('Login response data:', person);
+        } catch (error) {
+            setError(error instanceof Error ? error.message : 'Erro desconhecido');
+        } finally {
             setIsLoading(false);
         }
-
-        loadAdditionalData();
-    }, []);
+    };
 
     return (
         <SessionContext.Provider
@@ -68,6 +87,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
                 isAuthenticated: !!data,
                 logout,
                 login,
+                error,
             }}
         >
             {children}
