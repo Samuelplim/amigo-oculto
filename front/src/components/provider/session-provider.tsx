@@ -57,7 +57,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     const login = async (props: { login: string; password: string; type: 'admin' | 'participante' }) => {
         try {
             setIsLoading(true);
-            const res = await api<ParticipanteType | UsuarioType>({
+            const res = await api<any>({
                 url: `${import.meta.env.VITE_API_URL}/api/login`,
                 method: 'POST',
                 body: {
@@ -67,11 +67,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
                 },
             });
             if (res.ok === false) {
-                setError(res.data.message);
+                setError(res.data?.message);
+                return;
             }
-            console.log('Login successful:', person);
-            /*  setData({ ...person, isAdmin: props.type === 'admin' }); */
-            console.log('Login response data:', person);
+            setData(res.data as ParticipanteType | UsuarioType);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Erro desconhecido');
         } finally {
