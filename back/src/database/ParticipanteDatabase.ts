@@ -1,4 +1,5 @@
-import { Model } from "./Model";
+import { Database } from "./Databases";
+
 interface ParticipanteType {
   id: string;
   nome: string;
@@ -8,7 +9,7 @@ interface ParticipanteType {
   updated: string;
   eventoId: number;
 }
-export class ParticipanteModel extends Model {
+export class ParticipanteDatabase extends Database {
   static override tableName = "amigos.participantes";
 
   public static async findById(id: string): Promise<ParticipanteType> {

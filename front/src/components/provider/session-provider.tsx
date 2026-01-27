@@ -8,6 +8,7 @@ interface ParticipanteType {
     description: string;
     created: string;
     updated: string;
+    isAdmin: boolean;
     eventoId: number;
 }
 
@@ -57,7 +58,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     const login = async (props: { login: string; password: string; type: 'admin' | 'participante' }) => {
         try {
             setIsLoading(true);
-            const res = await api<any>({
+            const res = await api({
                 url: `${import.meta.env.VITE_API_URL}/api/login`,
                 method: 'POST',
                 body: {
@@ -70,7 +71,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
                 setError(res.data?.message);
                 return;
             }
-            setData(res.data as ParticipanteType | UsuarioType);
+            setData({ ...res.data, isAdmin: props.type === 'admin' } as ParticipanteType | UsuarioType);
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Erro desconhecido');
         } finally {

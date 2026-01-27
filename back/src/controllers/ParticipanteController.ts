@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ParticipanteModel } from "../models/Participante";
+import { ParticipanteDatabase } from "../database/ParticipanteDatabase";
 
 export class ParticipanteController {
   static async getByEventoId(req: Request, res: Response): Promise<Response> {
@@ -8,7 +8,9 @@ export class ParticipanteController {
       if (!id) {
         return res.status(404).json({ message: "Id não informado" });
       }
-      const participantes = await ParticipanteModel.findByEventoId(Number(id));
+      const participantes = await ParticipanteDatabase.findByEventoId(
+        Number(id),
+      );
       return res.json(participantes);
     } catch (error) {
       return res
@@ -23,7 +25,7 @@ export class ParticipanteController {
       if (!id) {
         return res.status(404).json({ message: "Id não informado" });
       }
-      const participante = await ParticipanteModel.findById(id);
+      const participante = await ParticipanteDatabase.findById(id);
 
       if (!participante) {
         return res.status(404).json({ message: "Participante não encontrado" });
@@ -41,7 +43,7 @@ export class ParticipanteController {
     try {
       const { nome, senha, description, eventoId } = req.body;
 
-      const novoParticipante = await ParticipanteModel.create({
+      const novoParticipante = await ParticipanteDatabase.create({
         nome,
         senha,
         description,
@@ -61,7 +63,7 @@ export class ParticipanteController {
       const { id } = req.params;
       const { nome, senha, description, evento } = req.body;
 
-      const participanteAtualizado = await ParticipanteModel.update({
+      const participanteAtualizado = await ParticipanteDatabase.update({
         id: Number(id),
         data: {
           nome,
@@ -84,7 +86,7 @@ export class ParticipanteController {
       if (!id) {
         return res.status(404).json({ message: "Id não fornecido" });
       }
-      await ParticipanteModel.delete(id);
+      await ParticipanteDatabase.delete(id);
 
       return res.status(204).send();
     } catch (error) {

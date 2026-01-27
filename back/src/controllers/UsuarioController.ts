@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { UsuarioModel } from "../models/Usuario";
+import { UsuarioDatabase } from "../database/UsuarioDatabase";
+import { UsuarioModel } from "../models/UsuarioModel";
 
 export class UsuarioController {
   static async getAll(req: Request, res: Response): Promise<Response> {
     try {
-      const usuarios = await UsuarioModel.findMany();
+      const usuarios = await UsuarioDatabase.findMany();
       return res.json(usuarios);
     } catch (error) {
       return res
@@ -17,7 +18,7 @@ export class UsuarioController {
     try {
       const { id } = req.params;
 
-      const usuario = await UsuarioModel.findById(Number(id));
+      const usuario = await UsuarioDatabase.findById(Number(id));
 
       if (!usuario) {
         return res.status(404).json({ message: "Usuário não encontrado" });
@@ -33,10 +34,9 @@ export class UsuarioController {
     try {
       const { nome, senha } = req.body;
 
-      const novoUsuario = await UsuarioModel.create({
-        nome,
-        senha,
-      });
+      const novoUsuario = await UsuarioDatabase.create(
+        new UsuarioModel({ nome, senha }),
+      );
 
       return res.status(201).json(novoUsuario);
     } catch (error) {
@@ -48,14 +48,18 @@ export class UsuarioController {
     try {
       const { id } = req.params;
       const { nome, senha } = req.body;
+      if (id === undefined) {
+        return res.status(400).json({ message: "ID do usuário é obrigatório" });
+      }
+      if (isNaN(parseInt(id))) {
+        return res.status(400).json({ message: "ID do usuário inválido" });
+      }
 
-      const usuarioAtualizado = await UsuarioModel.update({
-        id: parseInt(id!),
-        data: {
-          nome,
-          senha,
-        },
-      });
+      const user = await UsuarioDatabase.findById(parseInt(id!));
+      user.nome = nome;
+      user.senha = senha;
+
+      const usuarioAtualizado = await UsuarioDatabase.update(user);
 
       return res.json(usuarioAtualizado);
     } catch (error) {
@@ -68,10 +72,15 @@ export class UsuarioController {
   static async delete(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
+      if (id === undefined) {
+        return res.status(400).json({ message: "ID do usuário é obrigatório" });
+      }
+      if (isNaN(parseInt(id))) {
+        return res.status(400).json({ message: "ID do usuário inválido" });
+      }
 
-      await UsuarioModel.delete({
-        id: parseInt(id!),
-      });
+      const user = await UsuarioDatabase.findById(parseInt(id!));
+      await UsuarioDatabase.delete(user);
 
       return res.status(204).send();
     } catch (error) {

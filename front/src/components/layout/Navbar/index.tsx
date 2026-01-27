@@ -5,7 +5,7 @@ import { useSession } from '../../provider/session-provider';
 
 export const Navbar = () => {
     const { data } = useSession();
-    const navDesktopLinks = data?.user.isAdmin
+    const navDesktopLinks = data?.isAdmin
         ? [
               { href: '/', label: 'Inicio', icon: FaHome },
               { href: '/participantes', label: 'Participantes', icon: FaUsers },

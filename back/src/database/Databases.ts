@@ -3,7 +3,7 @@ interface ById<Payload> {
   data: Payload;
   id: number | string;
 }
-export abstract class Model {
+export abstract class Database {
   static tableName: string;
 
   protected static get table() {
@@ -11,7 +11,7 @@ export abstract class Model {
       throw new Error(
         `The table name must be defined for the model ${
           this.tableName
-        }. ClassName ${(this as any).name}`
+        }. ClassName ${(this as any).name}`,
       );
     }
     return connection(this.tableName as string);
@@ -24,7 +24,7 @@ export abstract class Model {
   }
 
   protected static async findOneById<Result>(
-    id: number | string
+    id: number | string,
   ): Promise<Result> {
     return this.table.where("id", id).select("*").first();
   }

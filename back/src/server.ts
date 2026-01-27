@@ -1,6 +1,6 @@
 ﻿import { ENV } from "./config/constant";
 import { connection } from "./config/knexfile";
-import app from "./index";
+import { app } from "./index";
 
 app.listen(ENV.PORT, () => {
   console.log(`Servidor rodando na porta ${ENV.PORT}`);
