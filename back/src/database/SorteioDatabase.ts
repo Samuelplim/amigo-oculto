@@ -4,10 +4,12 @@ import { Database } from "./Databases";
 export class SorteioDatabase extends Database {
   static override tableName = "amigos.sorteios";
   public static async findMany(): Promise<SorteioModel[]> {
-    return await this.findAll<SorteioType[]>();
+    const res = await this.findAll<SorteioType>();
+    return res.map((sorteio) => new SorteioModel(sorteio));
   }
   public static async findById(id: number): Promise<SorteioModel> {
-    return await this.findOneById<SorteioType>(id);
+    const res = await this.findOneById<SorteioType>(id);
+    return new SorteioModel(res);
   }
   public static async findByEventoId(
     eventoId: number,
@@ -28,11 +30,7 @@ export class SorteioDatabase extends Database {
         "participantes.id",
       );
   }
-  public static async create(props: {
-    participanteId: string;
-    participanteSorteadoId: string;
-    eventoId: number;
-  }): Promise<{ id: number }> {
+  public static async create(props: SorteioModel): Promise<{ id: number }> {
     return await this.insert<{
       participanteId: string;
       participanteSorteadoId: string;
@@ -40,17 +38,19 @@ export class SorteioDatabase extends Database {
     }>(props);
   }
   public static async createMany(
-    props: {
-      participanteId: string;
-      participanteSorteadoId: string;
-      eventoId: number;
-    }[],
+    props: SorteioModel[],
   ): Promise<{ id: number }> {
-    return await this.insert(props);
+    return await this.insert<
+      {
+        participanteId: string;
+        participanteSorteadoId: string;
+        eventoId: number;
+      }[]
+    >(props);
   }
-  public static async delete(props: {
-    id: number;
-  }): Promise<{ id: number | string }> {
+  public static async delete(
+    props: SorteioModel,
+  ): Promise<{ id: number | string }> {
     return await this.deleteById(props.id);
   }
 }
