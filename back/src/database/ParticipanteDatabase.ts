@@ -1,53 +1,60 @@
+import {
+  ParticipanteModel,
+  ParticipanteType,
+} from "../models/ParticipanteModel";
 import { Database } from "./Databases";
 
-interface ParticipanteType {
-  id: string;
-  nome: string;
-  senha: string;
-  description: string;
-  created: string;
-  updated: string;
-  eventoId: number;
-}
 export class ParticipanteDatabase extends Database {
   static override tableName = "amigos.participantes";
 
-  public static async findById(id: string): Promise<ParticipanteType> {
-    return await this.findOneById<ParticipanteType>(id);
+  public static async findById(id: string): Promise<ParticipanteModel> {
+    const result = await this.findOneById<ParticipanteType>(id);
+    return new ParticipanteModel(result);
   }
-  public static async findByEventoId(id: number): Promise<ParticipanteType[]> {
-    return await this.table
+  public static async findByEventoId(id: number): Promise<ParticipanteModel[]> {
+    const result = await this.table
       .where("eventoId", id)
       .select<ParticipanteType[]>("*");
+    return result.map((item) => new ParticipanteModel(item));
   }
-  public static async create(props: {
-    nome: string;
-    senha: string;
-    description: string;
-    eventoId: number;
-  }): Promise<{ id: number }> {
-    return await this.insert(props);
+  public static async create(
+    props: ParticipanteModel,
+  ): Promise<{ id: number }> {
+    return await this.insert({
+      nome: props.nome,
+      senha: props.senha,
+      description: props.description,
+      eventoId: props.eventoId,
+    });
   }
 
-  public static async update(props: {
-    data: {
+  public static async update(
+    props: ParticipanteModel,
+  ): Promise<{ id: number | string }> {
+    return await this.updateById<{
       nome: string;
       senha: string;
       description: string;
-    };
-    id: number;
-  }): Promise<{ id: number | string }> {
-    return await this.updateById(props);
+    }>({
+      data: {
+        description: props.description,
+        nome: props.nome,
+        senha: props.senha,
+      },
+      id: props.id,
+    });
   }
-  public static async delete(id: string): Promise<{ id: number | string }> {
-    return await this.deleteById(id);
+  public static async delete(
+    props: ParticipanteModel,
+  ): Promise<{ id: number | string }> {
+    return await this.deleteById(props.id);
   }
 
   /* Fisher–Yates */
-  static sort(participantes: ParticipanteType[]) {
+  static sort(participantes: ParticipanteModel[]) {
     for (let i = participantes.length - 1; i > 0; i--) {
       const random = Math.floor(Math.random() * (i + 1));
-      const temp: ParticipanteType = participantes[i]!;
+      const temp: ParticipanteModel = participantes[i]!;
       participantes[i] = participantes[random]!;
       participantes[random] = temp;
     }
