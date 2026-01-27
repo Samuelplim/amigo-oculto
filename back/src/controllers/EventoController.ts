@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { EventosDatabase } from "../database/EventosDatabase";
+import { EventoModel } from "../models/EventoModel";
 
 export class EventoController {
   static async getAll(req: Request, res: Response): Promise<Response> {
@@ -31,11 +32,14 @@ export class EventoController {
     try {
       const { nome, local, dataRealizacao } = req.body;
 
-      const novoGrupo = await EventosDatabase.create({
+      const evento = new EventoModel({
         nome,
         local,
         dataRealizacao,
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
       });
+      const novoGrupo = await EventosDatabase.create(evento);
 
       return res.status(201).json(novoGrupo);
     } catch (error) {
@@ -47,17 +51,17 @@ export class EventoController {
     try {
       const { id } = req.params;
       const { nome, local, dataRealizacao } = req.body;
+      if (!id) {
+        return res.status(404).json({ message: "Id não encontrado" });
+      }
 
-      const grupoAtualizado = await EventosDatabase.update({
-        id: Number(id),
-        data: {
-          nome,
-          local,
-          dataRealizacao,
-        },
-      });
+      const eventoAtualizado = await EventosDatabase.findById(Number(id));
+      eventoAtualizado.nome = nome;
+      eventoAtualizado.local = local;
+      eventoAtualizado.dataRealizacao = dataRealizacao;
+      await EventosDatabase.update(eventoAtualizado);
 
-      return res.json(grupoAtualizado);
+      return res.json(eventoAtualizado);
     } catch (error) {
       return res
         .status(500)
@@ -68,8 +72,8 @@ export class EventoController {
   static async delete(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-
-      await EventosDatabase.delete({ id: Number(id) });
+      const eventoAtualizado = await EventosDatabase.findById(Number(id));
+      await EventosDatabase.delete(eventoAtualizado);
 
       return res.status(204).send();
     } catch (error) {

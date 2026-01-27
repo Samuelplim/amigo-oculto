@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { SorteioDatabase } from "../database/SorteioDatabase";
 import { ParticipanteDatabase } from "../database/ParticipanteDatabase";
+import { SorteioModel } from "../models/SorteioModel";
 
 export class SorteioController {
   static async getById(req: Request, res: Response): Promise<Response> {
@@ -22,11 +23,13 @@ export class SorteioController {
     try {
       const { eventoId, participanteId, participanteSorteadoId } = req.body;
 
-      const novoSorteio = await SorteioDatabase.create({
+      const sorteio = new SorteioModel({
+        created: new Date().toISOString(),
         eventoId,
         participanteId,
         participanteSorteadoId,
       });
+      const novoSorteio = await SorteioDatabase.create(sorteio);
 
       return res.status(201).json(novoSorteio);
     } catch (error) {
@@ -37,8 +40,11 @@ export class SorteioController {
   static async delete(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-
-      await SorteioDatabase.delete({ id: Number(id) });
+      if (!id) {
+        return res.status(404).json({ message: "Id não encontrado" });
+      }
+      const sorteioAtualizado = await SorteioDatabase.findById(Number(id));
+      await SorteioDatabase.delete(sorteioAtualizado);
 
       return res.status(204).send();
     } catch (error) {
@@ -100,21 +106,23 @@ export class SorteioController {
             throw new Error("Erro ao realizar sorteio");
           }
 
-          return {
+          return new SorteioModel({
+            created: new Date().toISOString(),
             eventoId,
             participanteId: participante.id,
             participanteSorteadoId: primeiroSorteado.id,
-          };
+          });
         }
         const proximoSorteado = array[index + 1];
         if (!proximoSorteado) {
           throw new Error("Erro ao realizar sorteio");
         }
-        return {
+        return new SorteioModel({
+          created: new Date().toISOString(),
           eventoId,
           participanteId: participante.id,
           participanteSorteadoId: proximoSorteado.id,
-        };
+        });
       });
 
       const grupoRealizado = await SorteioDatabase.createMany(sorteiosData);

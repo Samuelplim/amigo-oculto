@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ParticipanteDatabase } from "../database/ParticipanteDatabase";
+import { ParticipanteModel } from "../models/ParticipanteModel";
 
 export class ParticipanteController {
   static async getByEventoId(req: Request, res: Response): Promise<Response> {
@@ -43,12 +44,16 @@ export class ParticipanteController {
     try {
       const { nome, senha, description, eventoId } = req.body;
 
-      const novoParticipante = await ParticipanteDatabase.create({
+      const participante = new ParticipanteModel({
+        created: new Date().toISOString(),
+        updated: new Date().toISOString(),
         nome,
-        senha,
         description,
+        senha,
         eventoId,
       });
+
+      const novoParticipante = await ParticipanteDatabase.create(participante);
 
       return res.status(201).json(novoParticipante);
     } catch (error) {
@@ -63,14 +68,15 @@ export class ParticipanteController {
       const { id } = req.params;
       const { nome, senha, description, evento } = req.body;
 
-      const participanteAtualizado = await ParticipanteDatabase.update({
-        id: Number(id),
-        data: {
-          nome,
-          senha,
-          description,
-        },
-      });
+      if (!id) {
+        return res.status(404).json({ message: "Id não encontrado" });
+      }
+
+      const participanteAtualizado = await ParticipanteDatabase.findById(id);
+      participanteAtualizado.nome = nome;
+      participanteAtualizado.senha = senha;
+      participanteAtualizado.description = description;
+      await ParticipanteDatabase.update(participanteAtualizado);
 
       return res.json(participanteAtualizado);
     } catch (error) {
@@ -86,7 +92,8 @@ export class ParticipanteController {
       if (!id) {
         return res.status(404).json({ message: "Id não fornecido" });
       }
-      await ParticipanteDatabase.delete(id);
+      const participante = await ParticipanteDatabase.findById(id);
+      await ParticipanteDatabase.delete(participante);
 
       return res.status(204).send();
     } catch (error) {

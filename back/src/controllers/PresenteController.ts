@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PresenteDatabase } from "../database/PresenteDatabase";
+import { PresenteModel } from "../models/PresenteModel";
 
 export class PresenteController {
   static async getByParticipantId(
@@ -39,13 +40,13 @@ export class PresenteController {
   static async create(req: Request, res: Response): Promise<Response> {
     try {
       const { nome, descricao, imagem, participanteId } = req.body;
-
-      const novoPresente = await PresenteDatabase.create({
-        nome,
+      const presente = new PresenteModel({
         descricao,
         imagem,
+        nome,
         participanteId,
       });
+      const novoPresente = await PresenteDatabase.create(presente);
 
       return res.status(201).json(novoPresente);
     } catch (error) {
@@ -61,14 +62,12 @@ export class PresenteController {
         return res.status(404).json({ message: "Id não encontrado" });
       }
 
-      const presenteAtualizado = await PresenteDatabase.update({
-        id: id,
-        data: {
-          nome,
-          descricao,
-          imagem,
-        },
-      });
+      const presenteAtualizado = await PresenteDatabase.findById(Number(id));
+      presenteAtualizado.descricao = descricao;
+      presenteAtualizado.imagem = imagem;
+      presenteAtualizado.nome = nome;
+
+      await PresenteDatabase.update(presenteAtualizado);
 
       return res.json(presenteAtualizado);
     } catch (error) {
@@ -84,7 +83,8 @@ export class PresenteController {
       if (!id) {
         return res.status(404).json({ message: "Id não encontrado" });
       }
-      await PresenteDatabase.delete({ id });
+      const presenteAtualizado = await PresenteDatabase.findById(Number(id));
+      await PresenteDatabase.delete(presenteAtualizado);
 
       return res.status(204).send();
     } catch (error) {

@@ -1,5 +1,5 @@
 export interface EventoType {
-  id: number;
+  id?: number;
   nome: string;
   local: string;
   dataRealizacao: string;
@@ -17,13 +17,24 @@ export class EventoModel {
   get nome(): string {
     return this.props.nome;
   }
+  set nome(nome: string) {
+    this.props.nome = nome;
+  }
 
   get local(): string {
     return this.props.local;
   }
 
+  set local(local: string) {
+    this.props.local = local;
+  }
+
   get dataRealizacao(): string {
     return this.props.dataRealizacao;
+  }
+
+  set dataRealizacao(dataRealizacao: string) {
+    this.props.dataRealizacao = dataRealizacao;
   }
 
   get created(): string {

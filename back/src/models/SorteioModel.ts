@@ -1,5 +1,5 @@
 export interface SorteioType {
-  id: string;
+  id?: string;
   participanteId: string;
   participanteSorteadoId: string;
   eventoId: number;

@@ -1,5 +1,5 @@
 export interface ParticipanteType {
-  id: string;
+  id?: string;
   nome: string;
   senha: string;
   description: string;
@@ -18,13 +18,24 @@ export class ParticipanteModel {
   get nome(): string {
     return this.props.nome;
   }
+  set nome(value: string) {
+    this.props.nome = value;
+  }
 
   get senha(): string {
     return this.props.senha;
   }
 
+  set senha(value: string) {
+    this.props.senha = value;
+  }
+
   get description(): string {
     return this.props.description;
+  }
+
+  set description(value: string) {
+    this.props.description = value;
   }
 
   get created(): string {
@@ -33,6 +44,10 @@ export class ParticipanteModel {
 
   get updated(): string {
     return this.props.updated;
+  }
+
+  set updated(value: string) {
+    this.props.updated = value;
   }
 
   get eventoId(): number {
