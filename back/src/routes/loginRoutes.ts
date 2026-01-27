@@ -3,4 +3,4 @@ import { LoginController } from "../controllers/LoginController";
 import { validateToken } from "../middlewares/authMiddleware";
 
 export const loginRoutes = Router();
-loginRoutes.post("/", validateToken, LoginController.login);
+loginRoutes.post("/", LoginController.login);

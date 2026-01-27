@@ -25,6 +25,8 @@ export class ParticipanteDatabase extends Database {
       senha: props.senha,
       description: props.description,
       eventoId: props.eventoId,
+      updated: props.updated,
+      created: props.created,
     });
   }
 
