@@ -1,37 +1,42 @@
+import { EventoModel, EventoType } from "../models/EventoModel";
 import { Database } from "./Databases";
 
-interface EventoType {
-  id: number;
-  nome: string;
-  local: string;
-  dataRealizacao: string;
-  created: string;
-  updated: string;
-}
 export class EventosDatabase extends Database {
   static override tableName: string = "amigos.eventos";
-  public static async findMany(): Promise<EventoType[]> {
-    return await this.findAll<EventoType>();
+  public static async findMany(): Promise<EventoModel[]> {
+    const eventos = await this.findAll<EventoType>();
+    return eventos.map((evento) => new EventoModel(evento));
   }
-  public static async findById(id: number): Promise<EventoType> {
-    return await this.findOneById<EventoType>(id);
+  public static async findById(id: number): Promise<EventoModel> {
+    const evento = await this.findOneById<EventoType>(id);
+    return new EventoModel(evento);
   }
-  public static async create(props: {
-    nome: string;
-    local: string;
-    dataRealizacao: string;
-  }): Promise<{ id: number }> {
-    return await this.insert(props);
+  public static async create(props: EventoModel): Promise<{ id: number }> {
+    return await this.insert({
+      nome: props.nome,
+      local: props.local,
+      dataRealizacao: props.dataRealizacao,
+    });
   }
-  public static async update(props: {
-    data: { nome: string; local: string; dataRealizacao: string };
-    id: number;
-  }): Promise<{ id: number | string }> {
-    return await this.updateById({ data: props.data, id: props.id });
+  public static async update(
+    props: EventoModel,
+  ): Promise<{ id: number | string }> {
+    return await this.updateById<{
+      nome: string;
+      local: string;
+      dataRealizacao: string;
+    }>({
+      data: {
+        nome: props.nome,
+        local: props.local,
+        dataRealizacao: props.dataRealizacao,
+      },
+      id: props.id,
+    });
   }
-  public static async delete(props: {
-    id: number;
-  }): Promise<{ id: number | string }> {
+  public static async delete(
+    props: EventoModel,
+  ): Promise<{ id: number | string }> {
     return await this.deleteById(props.id);
   }
 }
