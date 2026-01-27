@@ -1,4 +1,5 @@
-import { Model } from "./Model";
+import { Database } from "./Databases";
+
 interface PresenteType {
   id: string;
   nome: string;
@@ -6,7 +7,7 @@ interface PresenteType {
   imagem: string;
   participanteId: string;
 }
-export class PresenteModel extends Model {
+export class PresenteDatabase extends Database {
   static override tableName = "amigos.presentes";
 
   public static async create(presente: {
@@ -21,7 +22,7 @@ export class PresenteModel extends Model {
     return await this.findOneById<PresenteType>(id);
   }
   public static async findByParticipanteId(
-    participanteId: string
+    participanteId: string,
   ): Promise<PresenteType[]> {
     return this.table.where("participanteId", participanteId).select("*");
   }

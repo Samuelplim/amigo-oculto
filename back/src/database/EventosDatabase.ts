@@ -1,4 +1,5 @@
-import { Model } from "./Model";
+import { Database } from "./Databases";
+
 interface EventoType {
   id: number;
   nome: string;
@@ -7,7 +8,7 @@ interface EventoType {
   created: string;
   updated: string;
 }
-export class EventosModel extends Model {
+export class EventosDatabase extends Database {
   static override tableName: string = "amigos.eventos";
   public static async findMany(): Promise<EventoType[]> {
     return await this.findAll<EventoType>();

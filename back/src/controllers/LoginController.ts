@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { UsuarioModel } from "../models/Usuario";
-import { ParticipanteModel } from "../models/Participante";
+import { UsuarioDatabase } from "../database/UsuarioDatabase";
+import { ParticipanteDatabase } from "../database/ParticipanteDatabase";
 
 export class LoginController {
   static async login(req: Request, res: Response): Promise<Response> {
@@ -50,7 +50,7 @@ class Login {
   }
   async realizarLogin() {
     if (this.isAdmin()) {
-      const usuario = await UsuarioModel.findByName(this.nome);
+      const usuario = await UsuarioDatabase.findByName(this.nome);
 
       return usuario;
     }
@@ -59,7 +59,7 @@ class Login {
       if (key === undefined) {
         throw new Error(this.error);
       }
-      const participante = await ParticipanteModel.findById(key);
+      const participante = await ParticipanteDatabase.findById(key);
       return participante;
     }
     throw new Error(this.error);

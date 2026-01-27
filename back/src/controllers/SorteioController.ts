@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { SorteioModel } from "../models/Sorteio";
-import { ParticipanteModel } from "../models/Participante";
+import { SorteioDatabase } from "../database/SorteioDatabase";
+import { ParticipanteDatabase } from "../database/ParticipanteDatabase";
 
 export class SorteioController {
   static async getById(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
-      const sorteio = await SorteioModel.findById(Number(id));
+      const sorteio = await SorteioDatabase.findById(Number(id));
 
       if (!sorteio) {
         return res.status(404).json({ message: "Sorteio não encontrado" });
@@ -22,7 +22,7 @@ export class SorteioController {
     try {
       const { eventoId, participanteId, participanteSorteadoId } = req.body;
 
-      const novoSorteio = await SorteioModel.create({
+      const novoSorteio = await SorteioDatabase.create({
         eventoId,
         participanteId,
         participanteSorteadoId,
@@ -38,7 +38,7 @@ export class SorteioController {
     try {
       const { id } = req.params;
 
-      await SorteioModel.delete({ id: Number(id) });
+      await SorteioDatabase.delete({ id: Number(id) });
 
       return res.status(204).send();
     } catch (error) {
@@ -54,7 +54,7 @@ export class SorteioController {
       if (!eventoId) {
         return res.status(404).json({ message: "eventoId não informado" });
       }
-      const sorteios = await SorteioModel.findByEventoId(Number(eventoId));
+      const sorteios = await SorteioDatabase.findByEventoId(Number(eventoId));
 
       return res.json(sorteios);
     } catch (error) {
@@ -70,8 +70,8 @@ export class SorteioController {
       if (!eventoId) {
         return res.status(404).json({ message: "eventoId não informado" });
       }
-      const participantes = await ParticipanteModel.findByEventoId(
-        Number(eventoId)
+      const participantes = await ParticipanteDatabase.findByEventoId(
+        Number(eventoId),
       );
       if (!participantes) {
         return res.status(404).json({ message: "Grupo não encontrado" });
@@ -82,8 +82,8 @@ export class SorteioController {
             "É necessário pelo menos 2 participantes para realizar o sorteio",
         });
       }
-      const sorteiosRealizados = await SorteioModel.findByEventoId(
-        Number(eventoId)
+      const sorteiosRealizados = await SorteioDatabase.findByEventoId(
+        Number(eventoId),
       );
       if (sorteiosRealizados.length > 0) {
         return res
@@ -91,7 +91,7 @@ export class SorteioController {
           .json({ message: "Sorteio já foi realizado para este grupo" });
       }
       const desarranjo = [...participantes];
-      ParticipanteModel.sort(desarranjo);
+      ParticipanteDatabase.sort(desarranjo);
       // Salvar sorteios no banco
       const sorteiosData = desarranjo.map((participante, index, array) => {
         if (array.length - 1 === index) {
@@ -117,7 +117,7 @@ export class SorteioController {
         };
       });
 
-      const grupoRealizado = await SorteioModel.createMany(sorteiosData);
+      const grupoRealizado = await SorteioDatabase.createMany(sorteiosData);
 
       return res.json(grupoRealizado);
     } catch (error) {
@@ -129,7 +129,7 @@ export class SorteioController {
 
   static async getSorteioParticipante(
     req: Request,
-    res: Response
+    res: Response,
   ): Promise<Response> {
     try {
       const { eventoId, participanteId } = req.params;
@@ -139,7 +139,7 @@ export class SorteioController {
           .status(404)
           .json({ message: "eventoId ou participanteId não informado" });
       }
-      const sorteio = await SorteioModel.findByEventoIdAndParticipante({
+      const sorteio = await SorteioDatabase.findByEventoIdAndParticipante({
         eventoId: Number(eventoId),
         participanteId,
       });

@@ -1,0 +1,32 @@
+import { UsuarioModel, UsuarioType } from "../models/UsuarioModel";
+import { Database } from "./Databases";
+
+export class UsuarioDatabase extends Database {
+  static override tableName = "amigos.usuarios";
+  public static async findMany(): Promise<UsuarioModel[]> {
+    return await this.findAll<UsuarioModel>();
+  }
+  public static async findById(id: number): Promise<UsuarioModel> {
+    const res = await this.findOneById<UsuarioType>(id);
+    return new UsuarioModel(res);
+  }
+  public static async findByName(nome: string): Promise<UsuarioModel> {
+    return await this.table.whereILike("nome", nome).first<UsuarioModel>();
+  }
+  public static async create(user: UsuarioModel): Promise<{ id: number }> {
+    return await this.insert({ nome: user.nome, senha: user.senha });
+  }
+  public static async update(
+    user: UsuarioModel,
+  ): Promise<{ id: number | string }> {
+    return await this.updateById<{ nome: string; senha: string }>({
+      data: { nome: user.nome, senha: user.senha },
+      id: user.id,
+    });
+  }
+  public static async delete(
+    user: UsuarioModel,
+  ): Promise<{ id: number | string }> {
+    return await this.deleteById(user.id);
+  }
+}
