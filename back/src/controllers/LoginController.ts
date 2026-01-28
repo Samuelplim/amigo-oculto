@@ -4,19 +4,13 @@ import { ParticipanteDatabase } from "../database/ParticipanteDatabase";
 
 export class LoginController {
   static async login(req: Request, res: Response): Promise<Response> {
-    try {
-      const { nome, senha, tipo, chave } = req.body;
-      const login = new Login(nome, senha, tipo, chave);
-      const person = await login.realizarLogin();
-      if (!person) {
-        return res.status(401).json({ message: "Credenciais inválidas" });
-      }
-      return res.json({ ...person, senha: undefined });
-    } catch (error) {
-      return res
-        .status(500)
-        .json({ message: "Usuario ou senha é invalida.", error });
+    const { nome, senha, tipo, chave } = req.body;
+    const login = new Login(nome, senha, tipo, chave);
+    const person = await login.realizarLogin();
+    if (!person) {
+      return res.status(401).json({ message: "Credenciais inválidas" });
     }
+    return res.json({ ...person, senha: undefined });
   }
 }
 
@@ -51,7 +45,9 @@ class Login {
   async realizarLogin() {
     if (this.isAdmin()) {
       const usuario = await UsuarioDatabase.findByName(this.nome);
-
+      if (!usuario) {
+        throw new Error(this.error);
+      }
       return {
         id: usuario.id,
         senha: usuario.senha,
