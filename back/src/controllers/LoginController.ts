@@ -52,7 +52,11 @@ class Login {
     if (this.isAdmin()) {
       const usuario = await UsuarioDatabase.findByName(this.nome);
 
-      return usuario;
+      return {
+        id: usuario.id,
+        senha: usuario.senha,
+        nome: usuario.nome,
+      };
     }
     if (this.isParticipante()) {
       const key = this.chave;
@@ -60,7 +64,15 @@ class Login {
         throw new Error(this.error);
       }
       const participante = await ParticipanteDatabase.findById(key);
-      return participante;
+      return {
+        id: participante.id,
+        eventoId: participante.eventoId,
+        senha: participante.senha,
+        nome: participante.nome,
+        description: participante.description,
+        created: participante.created,
+        updated: participante.updated,
+      };
     }
     throw new Error(this.error);
   }
