@@ -2,12 +2,13 @@
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { routes } from "./routes";
+import { ENV } from "./config/constant";
 
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:3000", // Substitua pelo domínio correto do frontend
-  credentials: true, // Permitir envio de cookies
+  origin: ENV.FRONTEND_URL, 
+  credentials: true,
 }));
 
 app.use(cookieParser());

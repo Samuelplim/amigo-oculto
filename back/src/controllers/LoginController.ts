@@ -18,12 +18,11 @@ export class LoginController {
       const token = jwt.sign({ id: person.id, nome: person.nome }, process.env.JWT_SECRET!, {
         expiresIn: "1h",
       });
-
       res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Usa HTTPS em produção
         sameSite: "strict",
-        maxAge: 3600000, // 1 hora
+        maxAge: 24 * 60 * 60 * 1000, // 24 horas
       });
 
       return res.status(200).json({ message: "Login bem-sucedido" });

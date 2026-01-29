@@ -10,4 +10,6 @@ export const ENV = {
   DB_PASS: process.env.DB_PASS,
   DB_NAME: process.env.DB_NAME,
   DB_PORT: Number(process.env.DB_PORT),
+  JWT_SECRET: process.env.JWT_SECRET || "",
+  FRONTEND_URL: process.env.FRONTEND_URL || "",
 };
