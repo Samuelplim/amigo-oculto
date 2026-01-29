@@ -2,7 +2,7 @@ import { SorteioModel, SorteioType } from "../models/SorteioModel";
 import { Database } from "./Databases";
 
 export class SorteioDatabase extends Database {
-  static override tableName = "amigos.sorteios";
+  static override tableName = "public.sorteios";
   public static async findMany(): Promise<SorteioModel[]> {
     const res = await this.findAll<SorteioType>();
     return res.map((sorteio) => new SorteioModel(sorteio));

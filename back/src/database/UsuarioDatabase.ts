@@ -2,7 +2,7 @@ import { UsuarioModel, UsuarioType } from "../models/UsuarioModel";
 import { Database } from "./Databases";
 
 export class UsuarioDatabase extends Database {
-  static override tableName = "amigos.usuarios";
+  static override tableName = "public.usuarios";
   public static async findMany(): Promise<UsuarioModel[]> {
     return await this.findAll<UsuarioType>().then((users) =>
       users.map((user) => new UsuarioModel(user)),

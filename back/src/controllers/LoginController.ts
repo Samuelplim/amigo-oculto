@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { UsuarioDatabase } from "../database/UsuarioDatabase";
 import { ParticipanteDatabase } from "../database/ParticipanteDatabase";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 export class LoginController {
   static async login(req: Request, res: Response): Promise<Response> {
@@ -11,7 +14,19 @@ export class LoginController {
       if (!person) {
         return res.status(401).json({ message: "Credenciais inválidas" });
       }
-      return res.json({ ...person, senha: undefined });
+
+      const token = jwt.sign({ id: person.id, nome: person.nome }, process.env.JWT_SECRET!, {
+        expiresIn: "1h",
+      });
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // Usa HTTPS em produção
+        sameSite: "strict",
+        maxAge: 3600000, // 1 hora
+      });
+
+      return res.status(200).json({ message: "Login bem-sucedido" });
     } catch (error) {
       return res
         .status(500)

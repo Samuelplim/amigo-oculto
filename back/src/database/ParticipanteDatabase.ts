@@ -5,7 +5,7 @@ import {
 import { Database } from "./Databases";
 
 export class ParticipanteDatabase extends Database {
-  static override tableName = "amigos.participantes";
+  static override tableName = "public.participantes";
 
   public static async findById(id: string): Promise<ParticipanteModel> {
     const result = await this.findOneById<ParticipanteType>(id);

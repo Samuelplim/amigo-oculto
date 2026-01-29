@@ -2,7 +2,7 @@ import { EventoModel, EventoType } from "../models/EventoModel";
 import { Database } from "./Databases";
 
 export class EventosDatabase extends Database {
-  static override tableName: string = "amigos.eventos";
+  static override tableName: string = "public.eventos";
   public static async findMany(): Promise<EventoModel[]> {
     const eventos = await this.findAll<EventoType>();
     return eventos.map((evento) => new EventoModel(evento));
