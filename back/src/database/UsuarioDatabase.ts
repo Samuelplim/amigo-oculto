@@ -12,8 +12,15 @@ export class UsuarioDatabase extends Database {
     const res = await this.findOneById<UsuarioType>(id);
     return new UsuarioModel(res);
   }
-  public static async findByName(nome: string): Promise<UsuarioModel> {
-    const res = await this.table.whereILike("nome", nome).first<UsuarioType>();
+  public static async findByName(
+    nome: string,
+  ): Promise<UsuarioModel | undefined> {
+    const res = await this.table
+      .whereILike("nome", nome)
+      .first<UsuarioType | undefined>();
+    if (!res) {
+      return undefined;
+    }
     return new UsuarioModel(res);
   }
   public static async create(user: UsuarioModel): Promise<{ id: number }> {

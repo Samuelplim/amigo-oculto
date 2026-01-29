@@ -1,5 +1,5 @@
 import { Button } from '../../../components/Button';
-import { DataUser } from '../../../components/provider/session-provider';
+import { DataUser } from '../../../components/provider/auth-provider';
 import { Typography } from '../../../components/ui/Typography';
 
 export const EventSection = ({ data }: { data?: DataUser }) => {

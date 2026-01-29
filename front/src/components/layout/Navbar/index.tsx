@@ -1,11 +1,12 @@
 import { Link } from '@tanstack/react-router';
 import { FaHome, FaUsers, FaGifts, FaPen } from 'react-icons/fa';
 import { NavItem } from '../../ui/NavBar/NavItem';
-import { useSession } from '../../provider/session-provider';
+import { useAuth } from '../../provider/auth-provider';
+import { Button } from '../../Button';
 
 export const Navbar = () => {
-    const { data } = useSession();
-    const navDesktopLinks = data?.isAdmin
+    const { data, logout } = useAuth();
+    const navDesktopLinks = data?.user.isAdmin
         ? [
               { href: '/', label: 'Inicio', icon: FaHome },
               { href: '/participantes', label: 'Participantes', icon: FaUsers },
@@ -39,6 +40,9 @@ export const Navbar = () => {
                             {navDesktopLinks.map((link) => (
                                 <NavItem key={link.href} href={link.href} title={link.label} />
                             ))}
+                            <li>
+                                <Button title="Sair" onClick={logout} />
+                            </li>
                         </ul>
                     </nav>
                 </div>

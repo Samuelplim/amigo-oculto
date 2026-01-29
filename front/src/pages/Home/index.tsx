@@ -1,10 +1,10 @@
 import { Container } from '../../components/Container';
-import { useSession } from '../../components/provider/session-provider';
+import { useAuth } from '../../components/provider/auth-provider';
 import { Typography } from '../../components/ui/Typography';
 import { EventSection } from './components/EventSection';
 
 const Home = () => {
-    const { data } = useSession();
+    const { data } = useAuth();
     return (
         <Container>
             <Typography.Title>Amigo Oculto</Typography.Title>

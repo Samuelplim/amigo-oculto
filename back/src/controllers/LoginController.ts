@@ -7,30 +7,13 @@ dotenv.config();
 
 export class LoginController {
   static async login(req: Request, res: Response): Promise<Response> {
-    try {
-      const { nome, senha, tipo, chave } = req.body;
-      const login = new Login(nome, senha, tipo, chave);
-      const person = await login.realizarLogin();
-      if (!person) {
-        return res.status(401).json({ message: "Credenciais inválidas" });
-      }
-
-      const token = jwt.sign({ id: person.id, nome: person.nome }, process.env.JWT_SECRET!, {
-        expiresIn: "1h",
-      });
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // Usa HTTPS em produção
-        sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000, // 24 horas
-      });
-
-      return res.status(200).json({ message: "Login bem-sucedido" });
-    } catch (error) {
-      return res
-        .status(500)
-        .json({ message: "Usuario ou senha é invalida.", error });
+    const { nome, senha, tipo, chave } = req.body;
+    const login = new Login(nome, senha, tipo, chave);
+    const person = await login.realizarLogin();
+    if (!person) {
+      return res.status(401).json({ message: "Credenciais inválidas" });
     }
+    return res.json({ ...person, senha: undefined });
   }
 }
 
@@ -65,7 +48,9 @@ class Login {
   async realizarLogin() {
     if (this.isAdmin()) {
       const usuario = await UsuarioDatabase.findByName(this.nome);
-
+      if (!usuario) {
+        throw new Error(this.error);
+      }
       return {
         id: usuario.id,
         senha: usuario.senha,

@@ -1,18 +1,16 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
-import { Navbar } from '../components/layout/Navbar';
 import { Footer } from '../components/layout/Footer';
-import { SessionProvider } from '../components/provider/session-provider';
-
+import { AuthContext } from '../components/provider/auth-provider';
+interface MyRouterContext {
+    auth: AuthContext;
+}
 const RootLayout = () => (
     <>
-        <SessionProvider>
-            <Navbar />
-            <Outlet />
-            <Footer />
-            <TanStackRouterDevtools />
-        </SessionProvider>
+        <Outlet />
+        <Footer />
+        <TanStackRouterDevtools />
     </>
 );
 
-export const Route = createRootRoute({ component: RootLayout });
+export const Route = createRootRouteWithContext<MyRouterContext>()({ component: RootLayout });
