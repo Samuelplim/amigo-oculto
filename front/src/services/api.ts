@@ -1,9 +1,9 @@
-export const api = async (props: {
+export const api = async <Response>(props: {
     url: string;
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
     body?: unknown;
-}): Promise<{ data: any; ok: boolean }> => {
-    const response = await fetch(props.url, {
+}): Promise<{ data: Response; ok: boolean }> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}${props.url}`, {
         method: props.method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(props.body),

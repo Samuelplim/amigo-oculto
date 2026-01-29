@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Container } from '../../components/Container';
-import { useSession } from '../../components/provider/session-provider';
 import { Typography } from '../../components/ui/Typography';
+import { useAuth } from '../../components/provider/auth-provider';
 
 const Participantes = () => {
     interface Participante {
@@ -11,8 +11,10 @@ const Participantes = () => {
         created: string;
         updated: string;
         eventoId: number;
+        revelouPresenteado: boolean;
+        isAdmin: boolean;
     }
-    const { data } = useSession();
+    const { data } = useAuth();
     const [participantes, setParticipantes] = useState<Participante[]>([]);
     useEffect(() => {
         fetch(`${import.meta.env.VITE_API_URL}/api/participantes`)
@@ -24,16 +26,16 @@ const Participantes = () => {
     return (
         <Container>
             <Typography.Title>Participantes ({participantes.length})</Typography.Title>
-            {data?.isAdmin && (
+            {data?.user.isAdmin && (
                 <Typography.Link href={`/participantes/novo`}>Cadastrar novo participante</Typography.Link>
             )}
             {participantes.map((item, index) => (
                 <div key={index}>
                     <Typography.Text>
-                        {item.name} {item.isAdmin && ' 👑'}
+                        {item.nome} {item.isAdmin && ' 👑'}
                         {item.revelouPresenteado ? 'Revelou' : 'Não Revelou'}
                     </Typography.Text>
-                    {data?.isAdmin && (
+                    {data?.user.isAdmin && (
                         <Typography.Link href={`/participantes/${item.id}/editar`}>Editar</Typography.Link>
                     )}
                     <div className="h-2 bg-red-500" />

@@ -9,21 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as EventoRouteImport } from './routes/evento'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PresentesIndexRouteImport } from './routes/presentes/index'
-import { Route as ParticipantesIndexRouteImport } from './routes/participantes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as PresentesNovoRouteImport } from './routes/presentes/novo'
-import { Route as ParticipantesNovoRouteImport } from './routes/participantes/novo'
 import { Route as LoginUserIdRouteImport } from './routes/login/$userId'
-import { Route as PresentesPresenteIdEditarRouteImport } from './routes/presentes/$presenteId/editar'
-import { Route as ParticipantesUserIdEditarRouteImport } from './routes/participantes/$userId/editar'
+import { Route as AuthEventoRouteImport } from './routes/_auth.evento'
+import { Route as AuthPresentesIndexRouteImport } from './routes/_auth.presentes/index'
+import { Route as AuthParticipantesIndexRouteImport } from './routes/_auth.participantes/index'
+import { Route as AuthPresentesNovoRouteImport } from './routes/_auth.presentes/novo'
+import { Route as AuthParticipantesNovoRouteImport } from './routes/_auth.participantes/novo'
+import { Route as AuthPresentesPresenteIdEditarRouteImport } from './routes/_auth.presentes/$presenteId/editar'
+import { Route as AuthParticipantesUserIdEditarRouteImport } from './routes/_auth.participantes/$userId/editar'
 
-const EventoRoute = EventoRouteImport.update({
-  id: '/evento',
-  path: '/evento',
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,34 +30,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PresentesIndexRoute = PresentesIndexRouteImport.update({
-  id: '/presentes/',
-  path: '/presentes/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ParticipantesIndexRoute = ParticipantesIndexRouteImport.update({
-  id: '/participantes/',
-  path: '/participantes/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PresentesNovoRoute = PresentesNovoRouteImport.update({
-  id: '/presentes/novo',
-  path: '/presentes/novo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ParticipantesNovoRoute = ParticipantesNovoRouteImport.update({
-  id: '/participantes/novo',
-  path: '/participantes/novo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginUserIdRoute = LoginUserIdRouteImport.update({
@@ -66,58 +40,81 @@ const LoginUserIdRoute = LoginUserIdRouteImport.update({
   path: '/login/$userId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PresentesPresenteIdEditarRoute =
-  PresentesPresenteIdEditarRouteImport.update({
+const AuthEventoRoute = AuthEventoRouteImport.update({
+  id: '/evento',
+  path: '/evento',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthPresentesIndexRoute = AuthPresentesIndexRouteImport.update({
+  id: '/presentes/',
+  path: '/presentes/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthParticipantesIndexRoute = AuthParticipantesIndexRouteImport.update({
+  id: '/participantes/',
+  path: '/participantes/',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthPresentesNovoRoute = AuthPresentesNovoRouteImport.update({
+  id: '/presentes/novo',
+  path: '/presentes/novo',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthParticipantesNovoRoute = AuthParticipantesNovoRouteImport.update({
+  id: '/participantes/novo',
+  path: '/participantes/novo',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthPresentesPresenteIdEditarRoute =
+  AuthPresentesPresenteIdEditarRouteImport.update({
     id: '/presentes/$presenteId/editar',
     path: '/presentes/$presenteId/editar',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthRoute,
   } as any)
-const ParticipantesUserIdEditarRoute =
-  ParticipantesUserIdEditarRouteImport.update({
+const AuthParticipantesUserIdEditarRoute =
+  AuthParticipantesUserIdEditarRouteImport.update({
     id: '/participantes/$userId/editar',
     path: '/participantes/$userId/editar',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/evento': typeof EventoRoute
+  '/evento': typeof AuthEventoRoute
   '/login/$userId': typeof LoginUserIdRoute
-  '/participantes/novo': typeof ParticipantesNovoRoute
-  '/presentes/novo': typeof PresentesNovoRoute
-  '/admin': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
-  '/participantes': typeof ParticipantesIndexRoute
-  '/presentes': typeof PresentesIndexRoute
-  '/participantes/$userId/editar': typeof ParticipantesUserIdEditarRoute
-  '/presentes/$presenteId/editar': typeof PresentesPresenteIdEditarRoute
+  '/participantes/novo': typeof AuthParticipantesNovoRoute
+  '/presentes/novo': typeof AuthPresentesNovoRoute
+  '/participantes': typeof AuthParticipantesIndexRoute
+  '/presentes': typeof AuthPresentesIndexRoute
+  '/participantes/$userId/editar': typeof AuthParticipantesUserIdEditarRoute
+  '/presentes/$presenteId/editar': typeof AuthPresentesPresenteIdEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/evento': typeof EventoRoute
+  '/evento': typeof AuthEventoRoute
   '/login/$userId': typeof LoginUserIdRoute
-  '/participantes/novo': typeof ParticipantesNovoRoute
-  '/presentes/novo': typeof PresentesNovoRoute
-  '/admin': typeof AdminIndexRoute
   '/login': typeof LoginIndexRoute
-  '/participantes': typeof ParticipantesIndexRoute
-  '/presentes': typeof PresentesIndexRoute
-  '/participantes/$userId/editar': typeof ParticipantesUserIdEditarRoute
-  '/presentes/$presenteId/editar': typeof PresentesPresenteIdEditarRoute
+  '/participantes/novo': typeof AuthParticipantesNovoRoute
+  '/presentes/novo': typeof AuthPresentesNovoRoute
+  '/participantes': typeof AuthParticipantesIndexRoute
+  '/presentes': typeof AuthPresentesIndexRoute
+  '/participantes/$userId/editar': typeof AuthParticipantesUserIdEditarRoute
+  '/presentes/$presenteId/editar': typeof AuthPresentesPresenteIdEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/evento': typeof EventoRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/_auth/evento': typeof AuthEventoRoute
   '/login/$userId': typeof LoginUserIdRoute
-  '/participantes/novo': typeof ParticipantesNovoRoute
-  '/presentes/novo': typeof PresentesNovoRoute
-  '/admin/': typeof AdminIndexRoute
   '/login/': typeof LoginIndexRoute
-  '/participantes/': typeof ParticipantesIndexRoute
-  '/presentes/': typeof PresentesIndexRoute
-  '/participantes/$userId/editar': typeof ParticipantesUserIdEditarRoute
-  '/presentes/$presenteId/editar': typeof PresentesPresenteIdEditarRoute
+  '/_auth/participantes/novo': typeof AuthParticipantesNovoRoute
+  '/_auth/presentes/novo': typeof AuthPresentesNovoRoute
+  '/_auth/participantes/': typeof AuthParticipantesIndexRoute
+  '/_auth/presentes/': typeof AuthPresentesIndexRoute
+  '/_auth/participantes/$userId/editar': typeof AuthParticipantesUserIdEditarRoute
+  '/_auth/presentes/$presenteId/editar': typeof AuthPresentesPresenteIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -125,10 +122,9 @@ export interface FileRouteTypes {
     | '/'
     | '/evento'
     | '/login/$userId'
+    | '/login'
     | '/participantes/novo'
     | '/presentes/novo'
-    | '/admin'
-    | '/login'
     | '/participantes'
     | '/presentes'
     | '/participantes/$userId/editar'
@@ -138,10 +134,9 @@ export interface FileRouteTypes {
     | '/'
     | '/evento'
     | '/login/$userId'
+    | '/login'
     | '/participantes/novo'
     | '/presentes/novo'
-    | '/admin'
-    | '/login'
     | '/participantes'
     | '/presentes'
     | '/participantes/$userId/editar'
@@ -149,39 +144,32 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/evento'
+    | '/_auth'
+    | '/_auth/evento'
     | '/login/$userId'
-    | '/participantes/novo'
-    | '/presentes/novo'
-    | '/admin/'
     | '/login/'
-    | '/participantes/'
-    | '/presentes/'
-    | '/participantes/$userId/editar'
-    | '/presentes/$presenteId/editar'
+    | '/_auth/participantes/novo'
+    | '/_auth/presentes/novo'
+    | '/_auth/participantes/'
+    | '/_auth/presentes/'
+    | '/_auth/participantes/$userId/editar'
+    | '/_auth/presentes/$presenteId/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  EventoRoute: typeof EventoRoute
+  AuthRoute: typeof AuthRouteWithChildren
   LoginUserIdRoute: typeof LoginUserIdRoute
-  ParticipantesNovoRoute: typeof ParticipantesNovoRoute
-  PresentesNovoRoute: typeof PresentesNovoRoute
-  AdminIndexRoute: typeof AdminIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
-  ParticipantesIndexRoute: typeof ParticipantesIndexRoute
-  PresentesIndexRoute: typeof PresentesIndexRoute
-  ParticipantesUserIdEditarRoute: typeof ParticipantesUserIdEditarRoute
-  PresentesPresenteIdEditarRoute: typeof PresentesPresenteIdEditarRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/evento': {
-      id: '/evento'
-      path: '/evento'
-      fullPath: '/evento'
-      preLoaderRoute: typeof EventoRouteImport
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -191,46 +179,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/presentes/': {
-      id: '/presentes/'
-      path: '/presentes'
-      fullPath: '/presentes'
-      preLoaderRoute: typeof PresentesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/participantes/': {
-      id: '/participantes/'
-      path: '/participantes'
-      fullPath: '/participantes'
-      preLoaderRoute: typeof ParticipantesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login/': {
       id: '/login/'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/presentes/novo': {
-      id: '/presentes/novo'
-      path: '/presentes/novo'
-      fullPath: '/presentes/novo'
-      preLoaderRoute: typeof PresentesNovoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/participantes/novo': {
-      id: '/participantes/novo'
-      path: '/participantes/novo'
-      fullPath: '/participantes/novo'
-      preLoaderRoute: typeof ParticipantesNovoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login/$userId': {
@@ -240,35 +193,85 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginUserIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/presentes/$presenteId/editar': {
-      id: '/presentes/$presenteId/editar'
+    '/_auth/evento': {
+      id: '/_auth/evento'
+      path: '/evento'
+      fullPath: '/evento'
+      preLoaderRoute: typeof AuthEventoRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/presentes/': {
+      id: '/_auth/presentes/'
+      path: '/presentes'
+      fullPath: '/presentes'
+      preLoaderRoute: typeof AuthPresentesIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/participantes/': {
+      id: '/_auth/participantes/'
+      path: '/participantes'
+      fullPath: '/participantes'
+      preLoaderRoute: typeof AuthParticipantesIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/presentes/novo': {
+      id: '/_auth/presentes/novo'
+      path: '/presentes/novo'
+      fullPath: '/presentes/novo'
+      preLoaderRoute: typeof AuthPresentesNovoRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/participantes/novo': {
+      id: '/_auth/participantes/novo'
+      path: '/participantes/novo'
+      fullPath: '/participantes/novo'
+      preLoaderRoute: typeof AuthParticipantesNovoRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/presentes/$presenteId/editar': {
+      id: '/_auth/presentes/$presenteId/editar'
       path: '/presentes/$presenteId/editar'
       fullPath: '/presentes/$presenteId/editar'
-      preLoaderRoute: typeof PresentesPresenteIdEditarRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthPresentesPresenteIdEditarRouteImport
+      parentRoute: typeof AuthRoute
     }
-    '/participantes/$userId/editar': {
-      id: '/participantes/$userId/editar'
+    '/_auth/participantes/$userId/editar': {
+      id: '/_auth/participantes/$userId/editar'
       path: '/participantes/$userId/editar'
       fullPath: '/participantes/$userId/editar'
-      preLoaderRoute: typeof ParticipantesUserIdEditarRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthParticipantesUserIdEditarRouteImport
+      parentRoute: typeof AuthRoute
     }
   }
 }
 
+interface AuthRouteChildren {
+  AuthEventoRoute: typeof AuthEventoRoute
+  AuthParticipantesNovoRoute: typeof AuthParticipantesNovoRoute
+  AuthPresentesNovoRoute: typeof AuthPresentesNovoRoute
+  AuthParticipantesIndexRoute: typeof AuthParticipantesIndexRoute
+  AuthPresentesIndexRoute: typeof AuthPresentesIndexRoute
+  AuthParticipantesUserIdEditarRoute: typeof AuthParticipantesUserIdEditarRoute
+  AuthPresentesPresenteIdEditarRoute: typeof AuthPresentesPresenteIdEditarRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthEventoRoute: AuthEventoRoute,
+  AuthParticipantesNovoRoute: AuthParticipantesNovoRoute,
+  AuthPresentesNovoRoute: AuthPresentesNovoRoute,
+  AuthParticipantesIndexRoute: AuthParticipantesIndexRoute,
+  AuthPresentesIndexRoute: AuthPresentesIndexRoute,
+  AuthParticipantesUserIdEditarRoute: AuthParticipantesUserIdEditarRoute,
+  AuthPresentesPresenteIdEditarRoute: AuthPresentesPresenteIdEditarRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  EventoRoute: EventoRoute,
+  AuthRoute: AuthRouteWithChildren,
   LoginUserIdRoute: LoginUserIdRoute,
-  ParticipantesNovoRoute: ParticipantesNovoRoute,
-  PresentesNovoRoute: PresentesNovoRoute,
-  AdminIndexRoute: AdminIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
-  ParticipantesIndexRoute: ParticipantesIndexRoute,
-  PresentesIndexRoute: PresentesIndexRoute,
-  ParticipantesUserIdEditarRoute: ParticipantesUserIdEditarRoute,
-  PresentesPresenteIdEditarRoute: PresentesPresenteIdEditarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

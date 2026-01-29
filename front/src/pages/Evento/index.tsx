@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Typography } from '../../components/ui/Typography';
-import { Event } from '../../components/provider/session-provider';
 import { Container } from '../../components/Container';
 import { InputDate, InputText } from '../../components/ui/Input';
 import { Button } from '../../components/Button';
+import { Evento } from '../../domain/Evento';
 
-const Evento = () => {
+const EventoPage = () => {
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState<Event | undefined>(undefined);
+    const [data, setData] = useState<Evento | undefined>(undefined);
 
     useEffect(() => {
         const getData = () => {
             setLoading(true);
             setData({
-                nome: 'Natal',
+                name: 'Natal',
                 totalDePessoas: 50,
                 local: 'Rua XYX - Brazil',
                 Data: new Date().toISOString().slice(0, 16),
@@ -27,7 +27,7 @@ const Evento = () => {
         getData();
     }, []);
 
-    const handleInputChange = (field: keyof Event, value: string) => {
+    const handleInputChange = (field: keyof Evento, value: string) => {
         setData((prev) => (prev ? { ...prev, [field]: value } : undefined));
     };
     const saveChanges = () => {
@@ -48,8 +48,8 @@ const Evento = () => {
                 <InputText
                     placeholder="Nome"
                     label="Nome"
-                    value={data?.nome || ''}
-                    onChange={(e) => handleInputChange('nome', e.target.value)}
+                    value={data?.name || ''}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
                 />
 
                 <InputText
@@ -71,4 +71,4 @@ const Evento = () => {
     );
 };
 
-export { Evento };
+export { EventoPage as Evento };

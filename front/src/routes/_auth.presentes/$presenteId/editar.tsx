@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { EditarPresente } from '../../../pages/Presentes/screens/EditarPresente';
 
-export const Route = createFileRoute('/presentes/$presenteId/editar')({
+export const Route = createFileRoute('/_auth/presentes/$presenteId/editar')({
     component: RouteComponent,
 });
 
