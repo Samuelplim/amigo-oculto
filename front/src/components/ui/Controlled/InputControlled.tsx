@@ -12,7 +12,7 @@ export const InputControlled = <T extends FieldValues>({
     disabled,
 }: ControlledProps<T>) => {
     return (
-        <div className="space-y-2">
+        <div className="grid space-y-2">
             <label>{label}</label>
             <Controller
                 control={control}

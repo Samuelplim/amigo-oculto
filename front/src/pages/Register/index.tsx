@@ -11,28 +11,27 @@ type RegisterData = { name?: string; local?: string; Data?: string; email?: stri
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 const schema = z.object({
-    name: z.string().min(2, 'Nome muito curto'),
-    email: z.string().email('Email inválido'),
+    name: z.string().min(2, 'Nome muito curto').nonempty('Nome é obrigatório'),
+    email: z.email('Email inválido').nonempty('Email é obrigatório'),
     password: z
         .string()
         .regex(
             passwordRegex,
             'Senha inválida. Deve ter ao menos 8 caracteres, com letras maiúsculas, minúsculas, número e caractere especial'
-        ),
+        )
+        .nonempty('Senha é obrigatória'),
 });
 
 const RegisterPage = () => {
     const [loading, setLoading] = useState(false);
-    const { control, handleSubmit } = useForm({
+    const { control, handleSubmit, formState } = useForm({
         resolver: zodResolver(schema),
+        defaultValues: {
+            name: '',
+            email: '',
+            password: '',
+        },
     });
-    /*     const handleInputChange = (field: keyof RegisterData, value: string) => {
-        setData((prev) => ({ ...prev, [field]: value }));
-        setErrors((prev) => ({
-            ...prev,
-            ...(field === 'email' || field === 'password' ? { [field]: undefined } : {}),
-        }));
-    }; */
 
     const saveChanges: SubmitHandler<RegisterData> = (data) => {
         setLoading(true);
@@ -50,13 +49,10 @@ const RegisterPage = () => {
         setLoading(false);
     };
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
+    console.log(formState.errors);
     return (
         <Container>
-            <Typography.Title>Dados do Evento</Typography.Title>
+            <Typography.Title>Cadastre-se</Typography.Title>
             <form onSubmit={handleSubmit(saveChanges)}>
                 <div className="space-y-4">
                     <Controlled.Input
@@ -70,7 +66,7 @@ const RegisterPage = () => {
                         control={control}
                         name="email"
                         label="Seu Email"
-                        input={{ placeholder: 'meu@email.com' }}
+                        input={{ placeholder: 'meu@email.com', type: 'email' }}
                     />
 
                     <Controlled.Input
@@ -79,8 +75,14 @@ const RegisterPage = () => {
                         label="Senha"
                         input={{ placeholder: 'Senha', type: 'password' }}
                     />
+                    <Typography.Text size="sm">
+                        Ao se cadastrar, você concorda com nossos Termos de Serviço e Política de Privacidade.
+                    </Typography.Text>
 
-                    <Button title="Salvar" type="submit" />
+                    <Button title="Cadastrar" type="submit" fullWidth disabled={loading} />
+                    <Typography.Text size="sm">
+                        Já possui uma conta? <a href="/login">Entre aqui</a>
+                    </Typography.Text>
                 </div>
             </form>
         </Container>
