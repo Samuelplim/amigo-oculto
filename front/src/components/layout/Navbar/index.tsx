@@ -1,28 +1,29 @@
 import { Link } from '@tanstack/react-router';
-import { FaHome, FaUsers, FaGifts, FaPen } from 'react-icons/fa';
+import { FaHome, FaUsers, FaGifts, FaPen, FaUser } from 'react-icons/fa';
 import { NavItem } from '../../ui/NavBar/NavItem';
 import { useAuth } from '../../provider/auth-provider';
 import { Button } from '../../Button';
 
 export const Navbar = () => {
     const { data, logout } = useAuth();
-    const navDesktopLinks = data?.user.isAdmin
-        ? [
-              { href: '/', label: 'Inicio', icon: FaHome },
-              { href: '/participantes', label: 'Participantes', icon: FaUsers },
-              { href: '/evento', label: 'Evento', icon: FaPen },
-              { href: '/presentes', label: 'Presentes', icon: FaGifts },
-          ]
-        : [
-              { href: '/', label: 'Inicio', icon: FaHome },
-              { href: '/presentes', label: 'Presentes', icon: FaGifts },
-              { href: '/participantes', label: 'Participantes', icon: FaUsers },
-          ];
-    /*     const navMobileLinks = [
-        { href: '/', label: 'Inicio', icon: FaHome },
-        { href: '/presentes', label: 'Presentes', icon: FaGifts },
-        { href: '/participantes', label: 'Participantes', icon: FaUsers },
-    ]; */
+
+    const links = () => {
+        if (data === undefined) return [{ href: '/', label: 'Entrar', icon: FaUser }];
+        if (data?.user.isAdmin) {
+            return [
+                { href: '/', label: 'Inicio', icon: FaHome },
+                { href: '/participantes', label: 'Participantes', icon: FaUsers },
+                { href: '/evento', label: 'Evento', icon: FaPen },
+                { href: '/presentes', label: 'Presentes', icon: FaGifts },
+            ];
+        }
+        return [
+            { href: '/', label: 'Inicio', icon: FaHome },
+            { href: '/presentes', label: 'Presentes', icon: FaGifts },
+            { href: '/participantes', label: 'Participantes', icon: FaUsers },
+        ];
+    };
+
     return (
         <>
             {/* Desktop Header */}
@@ -37,7 +38,7 @@ export const Navbar = () => {
                     {/* Desktop Nav using NavItem */}
                     <nav>
                         <ul className="flex space-x-8">
-                            {navDesktopLinks.map((link) => (
+                            {links().map((link) => (
                                 <NavItem key={link.href} href={link.href} title={link.label} />
                             ))}
                             <li>
@@ -51,7 +52,7 @@ export const Navbar = () => {
             {/* Mobile Bottom Tabs Navigation */}
             <nav className="fixed bottom-0 left-0 right-0 border-t z-50 md:hidden">
                 <ul className="flex justify-around items-center h-16">
-                    {navDesktopLinks.map((link) => {
+                    {links().map((link) => {
                         const Icon = link.icon;
                         return (
                             <li key={link.href} className="flex-1">

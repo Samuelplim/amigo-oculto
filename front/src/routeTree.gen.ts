@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegistrarRouteImport } from './routes/registrar'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
@@ -21,6 +22,11 @@ import { Route as AuthParticipantesNovoRouteImport } from './routes/_auth.partic
 import { Route as AuthPresentesPresenteIdEditarRouteImport } from './routes/_auth.presentes/$presenteId/editar'
 import { Route as AuthParticipantesUserIdEditarRouteImport } from './routes/_auth.participantes/$userId/editar'
 
+const RegistrarRoute = RegistrarRouteImport.update({
+  id: '/registrar',
+  path: '/registrar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
   getParentRoute: () => rootRouteImport,
@@ -80,6 +86,7 @@ const AuthParticipantesUserIdEditarRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/registrar': typeof RegistrarRoute
   '/evento': typeof AuthEventoRoute
   '/login/$userId': typeof LoginUserIdRoute
   '/login': typeof LoginIndexRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/registrar': typeof RegistrarRoute
   '/evento': typeof AuthEventoRoute
   '/login/$userId': typeof LoginUserIdRoute
   '/login': typeof LoginIndexRoute
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
+  '/registrar': typeof RegistrarRoute
   '/_auth/evento': typeof AuthEventoRoute
   '/login/$userId': typeof LoginUserIdRoute
   '/login/': typeof LoginIndexRoute
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/registrar'
     | '/evento'
     | '/login/$userId'
     | '/login'
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/registrar'
     | '/evento'
     | '/login/$userId'
     | '/login'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_auth'
+    | '/registrar'
     | '/_auth/evento'
     | '/login/$userId'
     | '/login/'
@@ -159,12 +171,20 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
+  RegistrarRoute: typeof RegistrarRoute
   LoginUserIdRoute: typeof LoginUserIdRoute
   LoginIndexRoute: typeof LoginIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/registrar': {
+      id: '/registrar'
+      path: '/registrar'
+      fullPath: '/registrar'
+      preLoaderRoute: typeof RegistrarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_auth': {
       id: '/_auth'
       path: ''
@@ -270,6 +290,7 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
+  RegistrarRoute: RegistrarRoute,
   LoginUserIdRoute: LoginUserIdRoute,
   LoginIndexRoute: LoginIndexRoute,
 }

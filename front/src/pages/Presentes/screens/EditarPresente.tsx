@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef, ChangeEvent } from 'react';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Container } from '../../../components/Container';
-import { InputText } from '../../../components/ui/Input';
 import { Typography } from '../../../components/ui/Typography';
 import { Button } from '../../../components/Button';
-import { InputFile } from '../../../components/ui/Input/InputFile';
+import { Controlled } from '../../../components/ui/Controlled';
 
 interface Gift {
     id: string;
@@ -11,6 +13,13 @@ interface Gift {
     description?: string;
     imagem?: string;
 }
+
+const schema = z.object({
+    name: z.string().min(1, 'O nome do presente é obrigatório'),
+    description: z.string().optional(),
+});
+
+type GiftForm = z.infer<typeof schema>;
 
 export const EditarPresente = ({ presenteId }: { presenteId: string }) => {
     const [loading, setLoading] = useState(false);
@@ -20,8 +29,13 @@ export const EditarPresente = ({ presenteId }: { presenteId: string }) => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const savePresente = () => {
-        if (!presente?.name.trim()) {
+    const { control, handleSubmit, reset } = useForm<GiftForm>({
+        resolver: zodResolver(schema),
+        defaultValues: { name: '', description: '' },
+    });
+
+    const savePresente: SubmitHandler<GiftForm> = (data) => {
+        if (!data.name || !data.name.trim()) {
             setError('O nome do presente é obrigatório');
             return;
         }
@@ -29,18 +43,16 @@ export const EditarPresente = ({ presenteId }: { presenteId: string }) => {
         setLoading(true);
         setError('');
 
-        // Aqui você faria a chamada à API para salvar
-        // const formData = new FormData();
-        // formData.append('name', presente.name);
-        // formData.append('description', presente.description || '');
-        // if (file) {
-        //     formData.append('imagem', file);
-        // }
+        const formData = new FormData();
+        formData.append('name', data.name);
+        formData.append('description', data.description || '');
+        if (file) formData.append('imagem', file);
 
         // Simulando requisição
         setTimeout(() => {
-            console.log('Salvando:', { presente, file });
+            console.log('Salvando:', { data, file });
             setLoading(false);
+            alert('Presente salvo com sucesso!');
         }, 1000);
     };
 
@@ -60,6 +72,7 @@ export const EditarPresente = ({ presenteId }: { presenteId: string }) => {
                 };
 
                 setPresente(mockData);
+                reset({ name: mockData.name, description: mockData.description || '' });
                 if (mockData.imagem) {
                     setPreviewUrl(mockData.imagem);
                 }
@@ -72,32 +85,7 @@ export const EditarPresente = ({ presenteId }: { presenteId: string }) => {
         };
 
         loadPresente();
-    }, [presenteId]);
-
-    useEffect(() => {
-        // Criar preview quando um novo arquivo for selecionado
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviewUrl(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Cleanup
-        return () => {
-            if (previewUrl && previewUrl.startsWith('blob:')) {
-                URL.revokeObjectURL(previewUrl);
-            }
-        };
-    }, [file]);
-
-    const handleInputChange = (field: keyof Gift, value: string) => {
-        setPresente((prev) => {
-            if (!prev) return null;
-            return { ...prev, [field]: value };
-        });
-    };
+    }, [presenteId, reset]);
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const selectedFile = event.target.files?.[0];
@@ -118,21 +106,31 @@ export const EditarPresente = ({ presenteId }: { presenteId: string }) => {
         setError('');
         setFile(selectedFile);
 
-        // Atualizar o estado do presente com o nome do arquivo
-        // ou mantenha a URL existente se quiser atualizar só depois do upload
-        handleInputChange('imagem', selectedFile.name);
+        // Criar preview imediatamente
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result as string);
+        };
+        reader.readAsDataURL(selectedFile);
+
+        // Você também poderia persistir o nome no form se desejar
+        // setValue('imagemName', selectedFile.name);
     };
 
     const handleRemoveImage = () => {
         setFile(null);
         setPreviewUrl(null);
-        if (presente) {
-            setPresente({ ...presente, imagem: '' });
-        }
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
+        if (fileInputRef.current) fileInputRef.current.value = '';
     };
+
+    useEffect(() => {
+        // Cleanup para blob urls se usados
+        return () => {
+            if (previewUrl && previewUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
 
     if (loading && !presente) {
         return (
@@ -154,76 +152,72 @@ export const EditarPresente = ({ presenteId }: { presenteId: string }) => {
         <Container>
             <Typography.Title>Editar Presente</Typography.Title>
 
-            <div className="space-y-4">
-                <InputText
-                    label="Nome"
-                    value={presente.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder="Digite o nome do presente"
-                    required
-                    disabled={loading}
-                />
+            <form onSubmit={handleSubmit(savePresente)}>
+                <div className="space-y-4">
+                    <Controlled.Input
+                        control={control}
+                        name="name"
+                        label="Nome"
+                        input={{ placeholder: 'Digite o nome do presente' }}
+                    />
 
-                <InputText
-                    label="Descrição"
-                    value={presente.description || ''}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    placeholder="Digite a descrição do presente"
-                    disabled={loading}
-                />
+                    <Controlled.Input
+                        control={control}
+                        name="description"
+                        label="Descrição"
+                        input={{ placeholder: 'Digite a descrição do presente' }}
+                    />
 
-                <div className="space-y-2">
-                    <Typography.Text className="font-medium">Imagem</Typography.Text>
+                    <div className="space-y-2">
+                        <Typography.Text className="font-medium">Imagem</Typography.Text>
 
-                    {(previewUrl || presente.imagem) && (
-                        <div className="space-y-2">
-                            <div className="relative w-32 h-32">
-                                <img
-                                    src={previewUrl || presente.imagem}
-                                    alt="Preview"
-                                    className="w-full h-full object-cover rounded-lg border"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={handleRemoveImage}
-                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
-                                    disabled={loading}
-                                >
-                                    ×
-                                </button>
+                        {(previewUrl || presente.imagem) && (
+                            <div className="space-y-2">
+                                <div className="relative w-32 h-32">
+                                    <img
+                                        src={previewUrl || presente.imagem}
+                                        alt="Preview"
+                                        className="w-full h-full object-cover rounded-lg border"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveImage}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
+                                        disabled={loading}
+                                    >
+                                        ×
+                                    </button>
+                                </div>
                             </div>
+                        )}
+
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            disabled={loading}
+                            className="block"
+                        />
+
+                        <Typography.Text className="text-sm text-gray-500">
+                            Formatos suportados: JPG, PNG, GIF. Máx: 5MB
+                        </Typography.Text>
+                    </div>
+
+                    {error && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded">
+                            <Typography.Text className="text-red-600">{error}</Typography.Text>
                         </div>
                     )}
 
-                    <InputFile
-                        ref={fileInputRef}
-                        label={previewUrl ? 'Alterar imagem' : 'Selecionar imagem'}
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        disabled={loading}
-                    />
+                    <div className="flex gap-2 pt-4">
+                        <Button title={loading ? 'Salvando...' : 'Salvar'} type="submit" disabled={loading} />
 
-                    <Typography.Text className="text-sm text-gray-500">
-                        Formatos suportados: JPG, PNG, GIF. Máx: 5MB
-                    </Typography.Text>
-                </div>
-
-                {error && (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded">
-                        <Typography.Text className="text-red-600">{error}</Typography.Text>
+                        <Button title="Cancelar" onClick={() => window.history.back()} disabled={loading} />
                     </div>
-                )}
-
-                <div className="flex gap-2 pt-4">
-                    <Button
-                        title={loading ? 'Salvando...' : 'Salvar'}
-                        onClick={savePresente}
-                        disabled={loading || !presente.name.trim()}
-                    />
-
-                    <Button title="Cancelar" onClick={() => window.history.back()} disabled={loading} />
                 </div>
-            </div>
+            </form>
         </Container>
     );
 };

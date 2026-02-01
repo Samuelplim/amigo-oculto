@@ -71,4 +71,4 @@ const EventoPage = () => {
     );
 };
 
-export { EventoPage as Evento };
+export { EventoPage };

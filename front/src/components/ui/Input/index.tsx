@@ -1,4 +1,3 @@
-import { InputDate } from './InputDate';
-import { InputText } from './InputText';
+import { Input } from './Input';
 
-export { InputDate, InputText };
+export { Input };

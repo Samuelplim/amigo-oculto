@@ -4,7 +4,11 @@ import { Typography } from '../../../components/ui/Typography';
 
 export const EventSection = ({ data }: { data?: DataUser }) => {
     if (data === undefined) {
-        return null;
+        return (
+            <div>
+                <Typography.Title level={3}>Informações do evento</Typography.Title>
+            </div>
+        );
     }
     const { event, user } = data;
 

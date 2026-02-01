@@ -22,6 +22,10 @@ const textVariants = cva('font-body', {
             center: 'text-center',
             right: 'text-right',
         },
+        variant: {
+            default: '',
+            warning: 'text-yellow-600',
+        },
     },
     defaultVariants: {
         size: 'base',
@@ -30,15 +34,14 @@ const textVariants = cva('font-body', {
 });
 
 export interface TextProps
-    extends VariantProps<typeof textVariants>,
-        Omit<React.HTMLAttributes<HTMLParagraphElement>, 'color'> {
+    extends VariantProps<typeof textVariants>, Omit<React.HTMLAttributes<HTMLParagraphElement>, 'color'> {
     children: React.ReactNode;
     className?: string;
 }
 
 export const Text = React.forwardRef<HTMLElement, TextProps>(
-    ({ size = 'base', weight = 'normal', children, className, align, ...props }, ref) => {
-        const commonClassName = cn(textVariants({ size, weight, align }), className);
+    ({ size = 'base', weight = 'normal', children, className, align, variant, ...props }, ref) => {
+        const commonClassName = cn(textVariants({ size, weight, align, variant }), className);
 
         return (
             <p ref={ref as React.Ref<HTMLParagraphElement>} className={commonClassName} {...props}>
