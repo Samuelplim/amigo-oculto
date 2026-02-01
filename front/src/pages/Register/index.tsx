@@ -6,6 +6,8 @@ import { Button } from '../../components/Button';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controlled } from '../../components/ui/Controlled';
+import { userService } from '../../services/user.service';
+import { useNavigate } from '@tanstack/react-router';
 
 type RegisterData = {
     name?: string;
@@ -33,7 +35,9 @@ const schema = z.object({
 });
 
 const RegisterPage = () => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const { control, handleSubmit, formState } = useForm({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -57,7 +61,22 @@ const RegisterPage = () => {
             return;
         }
 
-        setLoading(false);
+        userService
+            .register({
+                name: parsed.data.name,
+                email: parsed.data.email,
+                password: parsed.data.password,
+            })
+            .then(() => {
+                alert('Usuário cadastrado com sucesso!');
+                navigate({ to: '/login' });
+            })
+            .catch((error) => {
+                setError('Erro ao cadastrar usuário. Tente novamente.');
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     console.log(formState.errors);
@@ -122,9 +141,18 @@ const RegisterPage = () => {
                         />
                     </div>
 
+                    {error && (
+                        <Typography.Text variant={'warning'} size={'sm'}>
+                            {error}
+                        </Typography.Text>
+                    )}
+
                     <Button title="Cadastrar" type="submit" fullWidth disabled={loading} />
                     <Typography.Text size="sm">
-                        Já possui uma conta? <a href="/login">Entrar </a>
+                        Já possui uma conta?{' '}
+                        <Typography.Link size="sm" href="/login">
+                            Entrar
+                        </Typography.Link>
                     </Typography.Text>
                 </div>
             </form>

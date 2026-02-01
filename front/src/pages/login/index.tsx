@@ -76,8 +76,14 @@ export const LoginPage = ({ userId }: { userId?: string }) => {
                     {error && <Typography.Text className="text-red-600">{error}</Typography.Text>}
                     {ErrorSection && <Typography.Text className="text-red-600">{ErrorSection}</Typography.Text>}
 
-                    <div className="pt-4">
+                    <div className="pt-4 space-y-4">
                         <Button title={loading ? 'Carregando...' : 'Entrar'} type="submit" disabled={loading} />
+                        <Typography.Text size="sm">
+                            Não possui uma conta?{' '}
+                            <Typography.Link size="sm" href="/registrar">
+                                Cadastrar
+                            </Typography.Link>
+                        </Typography.Text>
                     </div>
                 </div>
             </form>

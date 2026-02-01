@@ -18,14 +18,13 @@ const buttonVariants = cva(
         },
         defaultVariants: {
             size: 'base',
-            fullWidth: false,
+            fullWidth: true,
         },
     }
 );
 
 export interface ButtonProps
-    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-        VariantProps<typeof buttonVariants> {
+    extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
     title: string;
     icon?: React.ReactNode;
 }

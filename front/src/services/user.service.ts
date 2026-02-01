@@ -1,8 +1,9 @@
 import { api } from './api';
 
-export const loginService = async (props: {
-    username: string;
+const userRegisterService = async (props: {
+    name: string;
     password: string;
+    email: string;
 }): Promise<{
     id: number;
     nome: string;
@@ -15,8 +16,9 @@ export const loginService = async (props: {
             url: '/api/usuarios',
             method: 'POST',
             body: {
-                nome: props.username,
-                senha: props.password,
+                email: props.email,
+                name: props.name,
+                password: props.password,
             },
         });
         return {
@@ -26,4 +28,7 @@ export const loginService = async (props: {
     } catch (error) {
         return Promise.reject(error);
     }
+};
+export const userService = {
+    register: userRegisterService,
 };

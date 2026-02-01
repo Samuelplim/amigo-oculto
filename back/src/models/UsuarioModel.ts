@@ -1,4 +1,5 @@
 import { AppError } from "./AppError";
+import { UserPassword } from "./UserPassword";
 import { ZodAdapter } from "./ZodAdapter";
 
 export interface UserType {
@@ -48,7 +49,7 @@ export class UserModel {
   getPassword(): string {
     return this.password;
   }
-  setPassword(password: string) {
+  async setPassword(password: string) {
     if (!UserModel.validatePassword(password)) {
       throw new AppError({
         message:
@@ -56,13 +57,18 @@ export class UserModel {
         statusCode: 400,
       });
     }
-    this.password = password;
+    this.password = await UserPassword.encrypt(password);
   }
   getEmail(): string {
     return this.email;
   }
-
   setEmail(email: string) {
     this.email = ZodAdapter.emailSafeParse(email);
+  }
+  static async encryptPassword(password: string): Promise<string> {
+    return await UserPassword.encrypt(password);
+  }
+  async comparePassword(password: string): Promise<boolean> {
+    return await UserPassword.compare(password, this.password);
   }
 }
