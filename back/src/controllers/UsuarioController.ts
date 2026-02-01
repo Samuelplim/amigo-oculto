@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { UsuarioDatabase } from "../database/UsuarioDatabase";
 import { UserModel } from "../models/UsuarioModel";
-import { AppError } from "../models/AppError";
 
 export class UsuarioController {
   static async getAll(req: Request, res: Response): Promise<Response> {
@@ -16,84 +15,49 @@ export class UsuarioController {
   }
 
   static async getById(req: Request, res: Response): Promise<Response> {
-    try {
-      const { id } = req.params;
-
-      const usuario = await UsuarioDatabase.findById(Number(id));
-
-      if (!usuario) {
-        return res.status(404).json({ message: "Usuário não encontrado" });
-      }
-
-      return res.json(usuario);
-    } catch (error) {
-      return res.status(500).json({ message: "Erro ao buscar usuário", error });
+    const { id } = req.params;
+    const usuario = await UsuarioDatabase.findById(Number(id));
+    if (!usuario) {
+      return res.status(404).json({ message: "Usuário não encontrado" });
     }
+    return res.json(usuario);
   }
 
   static async create(req: Request, res: Response): Promise<Response> {
-    try {
-      const { name, pasword, email } = req.body;
-      const passwordCrypted = await UserModel.encryptPassword(pasword);
-      const novoUsuario = await UsuarioDatabase.create(
-        new UserModel({ name, pasword: passwordCrypted, email }),
-      );
-
-      return res.status(201).json(novoUsuario);
-    } catch (error) {
-      if (error instanceof AppError) {
-        return res.status(error.statusCode).json({ message: error.message });
-      }
-      return res.status(500).json({ message: "Erro ao criar usuário", error });
-    }
+    const { name, pasword, email } = req.body;
+    const passwordCrypted = await UserModel.encryptPassword(pasword);
+    const novoUsuario = await UsuarioDatabase.create(
+      new UserModel({ name, pasword: passwordCrypted, email }),
+    );
+    return res.status(201).json(novoUsuario);
   }
 
   static async update(req: Request, res: Response): Promise<Response> {
-    try {
-      const { id } = req.params;
-      const { nome, senha } = req.body;
-      if (id === undefined) {
-        return res.status(400).json({ message: "ID do usuário é obrigatório" });
-      }
-      if (isNaN(parseInt(id))) {
-        return res.status(400).json({ message: "ID do usuário inválido" });
-      }
-
-      const user = await UsuarioDatabase.findById(parseInt(id!));
-      user.setName(nome);
-      user.setPassword(senha);
-
-      const usuarioAtualizado = await UsuarioDatabase.update(user);
-
-      return res.json(usuarioAtualizado);
-    } catch (error) {
-      if (error instanceof AppError) {
-        return res.status(error.statusCode).json({ message: error.message });
-      }
-      return res
-        .status(500)
-        .json({ message: "Erro ao atualizar usuário", error });
+    const { id } = req.params;
+    const { name, password } = req.body;
+    if (id === undefined) {
+      return res.status(400).json({ message: "ID do usuário é obrigatório" });
     }
+    if (isNaN(parseInt(id))) {
+      return res.status(400).json({ message: "ID do usuário inválido" });
+    }
+    const user = await UsuarioDatabase.findById(parseInt(id!));
+    user.setName(name);
+    await user.setPassword(password);
+    await UsuarioDatabase.update(user);
+    return res.status(204).send();
   }
 
   static async delete(req: Request, res: Response): Promise<Response> {
-    try {
-      const { id } = req.params;
-      if (id === undefined) {
-        return res.status(400).json({ message: "ID do usuário é obrigatório" });
-      }
-      if (isNaN(parseInt(id))) {
-        return res.status(400).json({ message: "ID do usuário inválido" });
-      }
-
-      const user = await UsuarioDatabase.findById(parseInt(id!));
-      await UsuarioDatabase.delete(user);
-
-      return res.status(204).send();
-    } catch (error) {
-      return res
-        .status(500)
-        .json({ message: "Erro ao deletar usuário", error });
+    const { id } = req.params;
+    if (id === undefined) {
+      return res.status(400).json({ message: "ID do usuário é obrigatório" });
     }
+    if (isNaN(parseInt(id))) {
+      return res.status(400).json({ message: "ID do usuário inválido" });
+    }
+    const user = await UsuarioDatabase.findById(parseInt(id!));
+    await UsuarioDatabase.delete(user);
+    return res.status(204).send();
   }
 }

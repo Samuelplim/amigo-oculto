@@ -59,12 +59,7 @@ export const LoginPage = ({ userId }: { userId?: string }) => {
 
             <form onSubmit={handleSubmit(handleLogin)}>
                 <div className="space-y-4">
-                    <Controlled.Input
-                        control={control}
-                        name="login"
-                        label="Usuário"
-                        input={{ placeholder: 'Usuário' }}
-                    />
+                    <Controlled.Input control={control} name="login" label="Email" input={{ placeholder: 'Email' }} />
 
                     <Controlled.Input
                         control={control}

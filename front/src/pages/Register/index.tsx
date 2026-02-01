@@ -6,6 +6,7 @@ import { Button } from '../../components/Button';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controlled } from '../../components/ui/Controlled';
+import { Input } from '../../components/ui/Input';
 import { userService } from '../../services/user.service';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -15,35 +16,45 @@ type RegisterData = {
     Data?: string;
     email?: string;
     password?: string;
+    confirmPassword?: string;
     terms?: boolean;
 };
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-const schema = z.object({
-    name: z.string().min(2, 'Nome muito curto').nonempty('Nome é obrigatório'),
-    email: z.email('Email inválido').nonempty('Email é obrigatório'),
-    password: z
-        .string()
-        .regex(
-            passwordRegex,
-            'Senha inválida. Deve ter ao menos 8 caracteres, com letras maiúsculas, minúsculas, número e caractere especial'
-        )
-        .nonempty('Senha é obrigatória'),
-    terms: z.boolean().refine((v) => v === true, {
-        message: 'Você deve concordar com os Termos de Serviço',
-    }),
-});
+const schema = z
+    .object({
+        name: z.string().min(2, 'Nome muito curto').nonempty('Nome é obrigatório'),
+        email: z.email('Email inválido').nonempty('Email é obrigatório'),
+        password: z
+            .string()
+            .regex(
+                passwordRegex,
+                'Senha inválida. Deve ter ao menos 8 caracteres, com letras maiúsculas, minúsculas, número e caractere especial'
+            )
+            .nonempty('Senha é obrigatória'),
+        confirmPassword: z.string().nonempty('Confirme sua senha'),
+        terms: z.boolean().refine((v) => v === true, {
+            message: 'Você deve concordar com os Termos de Serviço',
+        }),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        path: ['confirmPassword'],
+        message: 'As senhas não coincidem',
+    });
 
 const RegisterPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { control, handleSubmit, formState } = useForm({
         resolver: zodResolver(schema),
         defaultValues: {
             name: '',
             email: '',
             password: '',
+            confirmPassword: '',
             terms: false,
         },
     });
@@ -55,6 +66,7 @@ const RegisterPage = () => {
             name: data.name || '',
             email: data.email || '',
             password: data.password || '',
+            confirmPassword: data.confirmPassword || '',
         });
         if (!parsed.success) {
             setLoading(false);
@@ -71,7 +83,7 @@ const RegisterPage = () => {
                 alert('Usuário cadastrado com sucesso!');
                 navigate({ to: '/login' });
             })
-            .catch((error) => {
+            .catch(() => {
                 setError('Erro ao cadastrar usuário. Tente novamente.');
             })
             .finally(() => {
@@ -99,12 +111,73 @@ const RegisterPage = () => {
                         input={{ placeholder: 'meu@email.com', type: 'email' }}
                     />
 
-                    <Controlled.Input
-                        control={control}
-                        name="password"
-                        label="Senha"
-                        input={{ placeholder: 'Senha', type: 'password' }}
-                    />
+                    <div className="grid space-y-2">
+                        <label>Senha</label>
+                        <Controller
+                            control={control}
+                            name="password"
+                            render={({ field, fieldState: { error } }) => (
+                                <>
+                                    <div className="relative">
+                                        <Input
+                                            {...field}
+                                            placeholder="Senha"
+                                            type={showPassword ? 'text' : 'password'}
+                                            className="pr-20"
+                                        />
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword((s) => !s)}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-primary"
+                                        >
+                                            {showPassword ? 'Ocultar' : 'Mostrar'}
+                                        </button>
+                                    </div>
+
+                                    {error?.message && (
+                                        <Typography.Text variant={'warning'} size={'sm'}>
+                                            {error.message}
+                                        </Typography.Text>
+                                    )}
+                                </>
+                            )}
+                        />
+                    </div>
+
+                    <div className="grid space-y-2">
+                        <label>Confirme a senha</label>
+                        <Controller
+                            control={control}
+                            name="confirmPassword"
+                            render={({ field, fieldState: { error } }) => (
+                                <>
+                                    <div className="relative">
+                                        <Input
+                                            {...field}
+                                            placeholder="Confirme a senha"
+                                            type={showConfirmPassword ? 'text' : 'password'}
+                                            className="pr-20"
+                                        />
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword((s) => !s)}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-primary"
+                                        >
+                                            {showConfirmPassword ? 'Ocultar' : 'Mostrar'}
+                                        </button>
+                                    </div>
+
+                                    {error?.message && (
+                                        <Typography.Text variant={'warning'} size={'sm'}>
+                                            {error.message}
+                                        </Typography.Text>
+                                    )}
+                                </>
+                            )}
+                        />
+                    </div>
                     <div>
                         <Controller
                             control={control}

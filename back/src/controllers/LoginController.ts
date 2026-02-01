@@ -2,43 +2,49 @@ import { Request, Response } from "express";
 import { UsuarioDatabase } from "../database/UsuarioDatabase";
 import { ParticipanteDatabase } from "../database/ParticipanteDatabase";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
+import { ENV } from "../config/constant";
 
 export class LoginController {
   static async login(req: Request, res: Response): Promise<Response> {
-    const { nome, senha, tipo, chave } = req.body;
-    const login = new Login(nome, senha, tipo, chave);
+    const { email, password, tipo, chave } = req.body;
+    const login = new Login(email, password, tipo, chave);
     const person = await login.realizarLogin();
-    if (!person) {
-      return res.status(401).json({ message: "Credenciais inválidas" });
-    }
-    return res.json({ ...person, senha: undefined });
+
+    const token = jwt.sign(
+      { id: person.id, nome: person.nome },
+      ENV.JWT_SECRET!,
+      {
+        expiresIn: "1h",
+      },
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: ENV.NODE_ENV === "production", // Usa HTTPS em produção
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 24 horas
+    });
+
+    return res.status(200).json({ message: "Login bem-sucedido" });
   }
 }
 
 class Login {
-  nome: string;
-  senha: string;
+  email: string;
+  password: string;
   tipo: "admin" | "participante";
   chave?: string;
   error = "Usuario ou senha é invalida.";
 
-  constructor(nome: string, senha: string, tipo: string, chave?: string) {
-    this.nome = nome;
-    this.senha = senha;
-    this.validade();
+  constructor(email: string, password: string, tipo: string, chave?: string) {
+    this.email = email;
+    this.password = password;
     if (tipo !== "admin" && tipo !== "participante") {
       throw new Error(this.error);
     }
     this.tipo = tipo;
     this.chave = chave;
   }
-  validade() {
-    if (!this.nome || !this.senha) {
-      throw new Error(this.error);
-    }
-  }
+
   isAdmin() {
     return this.tipo === "admin";
   }
@@ -47,8 +53,12 @@ class Login {
   }
   async realizarLogin() {
     if (this.isAdmin()) {
-      const usuario = await UsuarioDatabase.findByName(this.nome);
+      const usuario = await UsuarioDatabase.findByEmail(this.email);
       if (!usuario) {
+        throw new Error(this.error);
+      }
+      const result = await usuario.comparePassword(this.password);
+      if (!result) {
         throw new Error(this.error);
       }
       return {

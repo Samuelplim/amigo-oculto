@@ -13,4 +13,5 @@ export const ENV = {
   JWT_SECRET: process.env.JWT_SECRET || "",
   FRONTEND_URL: process.env.FRONTEND_URL || "",
   DB_SCHEMA: process.env.DB_SCHEMA || "public",
+  NODE_ENV: process.env.NODE_ENV || "development",
 };

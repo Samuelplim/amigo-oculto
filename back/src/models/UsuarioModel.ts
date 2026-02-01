@@ -20,13 +20,6 @@ export class UserModel {
   constructor(props: UserType) {
     this.id = props.id;
     this.name = props.name;
-    if (!UserModel.validatePassword(props.pasword)) {
-      throw new AppError({
-        message:
-          "Senha não atende requisitos mínimos (mínimo 8 caracteres, incluir maiúscula, minúscula, número e caractere especial)",
-        statusCode: 400,
-      });
-    }
     this.password = props.pasword;
     this.email = ZodAdapter.emailSafeParse(props.email);
   }
@@ -50,14 +43,7 @@ export class UserModel {
     return this.password;
   }
   async setPassword(password: string) {
-    if (!UserModel.validatePassword(password)) {
-      throw new AppError({
-        message:
-          "Senha não atende requisitos mínimos (mínimo 8 caracteres, incluir maiúscula, minúscula, número e caractere especial)",
-        statusCode: 400,
-      });
-    }
-    this.password = await UserPassword.encrypt(password);
+    this.password = await UserModel.encryptPassword(password);
   }
   getEmail(): string {
     return this.email;
@@ -66,6 +52,14 @@ export class UserModel {
     this.email = ZodAdapter.emailSafeParse(email);
   }
   static async encryptPassword(password: string): Promise<string> {
+    if (!UserModel.validatePassword(password)) {
+      throw new AppError({
+        message:
+          "Senha não atende requisitos mínimos (mínimo 8 caracteres, incluir maiúscula, minúscula, número e caractere especial)",
+        statusCode: 400,
+      });
+    }
+
     return await UserPassword.encrypt(password);
   }
   async comparePassword(password: string): Promise<boolean> {
