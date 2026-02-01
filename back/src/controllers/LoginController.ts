@@ -52,9 +52,9 @@ class Login {
         throw new Error(this.error);
       }
       return {
-        id: usuario.id,
-        senha: usuario.senha,
-        nome: usuario.nome,
+        id: usuario.getId(),
+        senha: usuario.getPassword(),
+        nome: usuario.getName(),
       };
     }
     if (this.isParticipante()) {

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UsuarioDatabase } from "../database/UsuarioDatabase";
-import { UsuarioModel } from "../models/UsuarioModel";
+import { UserModel } from "../models/UsuarioModel";
+import { AppError } from "../models/AppError";
 
 export class UsuarioController {
   static async getAll(req: Request, res: Response): Promise<Response> {
@@ -32,15 +33,18 @@ export class UsuarioController {
 
   static async create(req: Request, res: Response): Promise<Response> {
     try {
-      const { nome, senha } = req.body;
+      const { nome, senha, email } = req.body;
       console.log("Dados recebidos:", req.body);
 
       const novoUsuario = await UsuarioDatabase.create(
-        new UsuarioModel({ nome, senha }),
+        new UserModel({ name: nome, pasword: senha, email }),
       );
 
       return res.status(201).json(novoUsuario);
     } catch (error) {
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({ message: error.message });
+      }
       return res.status(500).json({ message: "Erro ao criar usuário", error });
     }
   }
@@ -57,13 +61,16 @@ export class UsuarioController {
       }
 
       const user = await UsuarioDatabase.findById(parseInt(id!));
-      user.nome = nome;
-      user.senha = senha;
+      user.setName(nome);
+      user.setPassword(senha);
 
       const usuarioAtualizado = await UsuarioDatabase.update(user);
 
       return res.json(usuarioAtualizado);
     } catch (error) {
+      if (error instanceof AppError) {
+        return res.status(error.statusCode).json({ message: error.message });
+      }
       return res
         .status(500)
         .json({ message: "Erro ao atualizar usuário", error });

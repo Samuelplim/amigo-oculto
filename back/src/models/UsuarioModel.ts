@@ -1,26 +1,68 @@
-export interface UsuarioType {
+import { AppError } from "./AppError";
+import { ZodAdapter } from "./ZodAdapter";
+
+export interface UserType {
   id?: number;
-  nome: string;
-  senha: string;
+  name: string;
+  pasword: string;
+  email: string;
 }
-export class UsuarioModel {
-  constructor(private props: UsuarioType) {}
+export class UserModel {
+  private id?: number;
+  private name: string;
+  private password: string;
+  private email: string;
+  // Minimum 8 chars, at least one lower, one upper, one number and one special char
+  private static passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
-  get id(): number {
-    if (this.props.id === undefined) throw new Error("Method not implemented.");
-    return this.props.id;
+  constructor(props: UserType) {
+    this.id = props.id;
+    this.name = props.name;
+    if (!UserModel.validatePassword(props.pasword)) {
+      throw new AppError({
+        message:
+          "Senha não atende requisitos mínimos (mínimo 8 caracteres, incluir maiúscula, minúscula, número e caractere especial)",
+        statusCode: 400,
+      });
+    }
+    this.password = props.pasword;
+    this.email = ZodAdapter.emailSafeParse(props.email);
   }
 
-  get nome(): string {
-    return this.props.nome;
+  static validatePassword(password: string): boolean {
+    return UserModel.passwordRegex.test(password);
   }
-  set nome(nome: string) {
-    this.props.nome = nome;
+
+  getId(): number {
+    if (this.id === undefined) throw new Error("Method not implemented.");
+    return this.id;
   }
-  get senha(): string {
-    return this.props.senha;
+
+  getName(): string {
+    return this.name;
   }
-  set senha(senha: string) {
-    this.props.senha = senha;
+  setName(name: string) {
+    this.name = name;
+  }
+  getPassword(): string {
+    return this.password;
+  }
+  setPassword(password: string) {
+    if (!UserModel.validatePassword(password)) {
+      throw new AppError({
+        message:
+          "Senha não atende requisitos mínimos (mínimo 8 caracteres, incluir maiúscula, minúscula, número e caractere especial)",
+        statusCode: 400,
+      });
+    }
+    this.password = password;
+  }
+  getEmail(): string {
+    return this.email;
+  }
+
+  setEmail(email: string) {
+    this.email = ZodAdapter.emailSafeParse(email);
   }
 }
