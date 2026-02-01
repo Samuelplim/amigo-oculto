@@ -1,0 +1,114 @@
+/* Subistitua todas as ocorrencias
+Nome do site: Amigos
+URL do site: https://amigosamigos.com.br
+*/
+export const PrivacyPolicy = () => {
+    return (
+        <div style={{ color: 'rgb(68, 68, 68)' }}>
+            <h2>Política de Privacidade</h2>
+
+            <p>
+                A sua privacidade é importante para nós. É política do Amigos respeitar a sua privacidade em relação a
+                qualquer informação sua que possamos coletar no site
+                <a href="https://amigosamigos.com.br" target="_blank" rel="noopener noreferrer">
+                    {' '}
+                    Amigos
+                </a>
+                , e outros sites que possuímos e operamos.
+            </p>
+
+            <p>
+                Solicitamos informações pessoais apenas quando realmente precisamos delas para lhe fornecer um serviço.
+                Fazemo-lo por meios justos e legais, com o seu conhecimento e consentimento. Também informamos por que
+                estamos coletando e como serão usados os dados.
+            </p>
+
+            <p>
+                Apenas retemos as informações coletadas pelo tempo necessário para fornecer o serviço solicitado. Quando
+                armazenamos dados, os protegemos por meios comercialmente aceitáveis para evitar perdas, acessos ou
+                divulgações não autorizadas.
+            </p>
+
+            <p>
+                Não compartilhamos informações de identificação pessoal publicamente ou com terceiros, exceto quando
+                exigido por lei.
+            </p>
+
+            <p>
+                O nosso site pode ter links para sites externos que não são operados por nós. Esteja ciente de que não
+                temos controle sobre o conteúdo e práticas desses sites e não podemos aceitar responsabilidade por suas
+                respectivas
+                <a
+                    href="https://politicaprivacidade.com/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    style={{ backgroundColor: 'transparent' }}
+                >
+                    políticas de privacidade
+                </a>
+                .
+            </p>
+
+            <p>
+                Você é livre para recusar a nossa solicitação de informações pessoais, entendendo que talvez não
+                possamos fornecer alguns dos serviços desejados.
+            </p>
+
+            <p>
+                O uso continuado de nosso site será considerado como aceitação de nossas práticas em torno de
+                privacidade e informações pessoais. Se você tiver alguma dúvida sobre como lidamos com dados do usuário
+                e informações pessoais, entre em contato conosco.
+            </p>
+
+            <h3>Publicidade</h3>
+            <ul>
+                <li>
+                    O serviço Google AdSense que usamos para veicular publicidade usa um cookie DoubleClick para
+                    veicular anúncios mais relevantes em toda a Web e limitar o número de vezes que um determinado
+                    anúncio é exibido para você.
+                </li>
+                <li>
+                    Para mais informações sobre o Google AdSense, consulte as FAQs oficiais sobre privacidade do Google
+                    AdSense.
+                </li>
+                <li>
+                    Utilizamos anúncios para compensar os custos de funcionamento deste site e fornecer financiamento
+                    para futuros desenvolvimentos. Os cookies de publicidade comportamental usados por este site foram
+                    projetados para garantir que você receba anúncios mais relevantes, rastreando anonimamente seus
+                    interesses.
+                </li>
+                <li>
+                    Vários parceiros anunciam em nosso nome e os cookies de rastreamento de afiliados simplesmente nos
+                    permitem ver se nossos clientes acessaram o site através de um dos sites de nossos parceiros, para
+                    que possamos creditá-los adequadamente quando aplicável.
+                </li>
+            </ul>
+
+            <h3>Compromisso do Usuário</h3>
+            <p>
+                O usuário se compromete a fazer uso adequado dos conteúdos e da informação que o Amigos oferece no site
+                e com caráter enunciativo, mas não limitativo:
+            </p>
+            <ul>
+                <li>A) Não se envolver em atividades que sejam ilegais ou contrárias à boa fé e à ordem pública;</li>
+                <li>
+                    B) Não difundir propaganda ou conteúdo de natureza racista, xenofóbica, jogos de sorte ou azar,
+                    pornografia ilegal, apologia ao terrorismo ou que viole direitos humanos;
+                </li>
+                <li>
+                    C) Não causar danos aos sistemas físicos (hardwares) e lógicos (softwares) do Amigos, de seus
+                    fornecedores ou terceiros, ou introduzir vírus ou quaisquer outros códigos maliciosos.
+                </li>
+            </ul>
+
+            <h3>Mais informações</h3>
+            <p>
+                Esperamos que esteja esclarecido e, como mencionado anteriormente, se houver algo que você não tem
+                certeza se precisa ou não, geralmente é mais seguro deixar os cookies ativados caso interaja com algum
+                recurso do site.
+            </p>
+
+            <p>Esta política é efetiva a partir de 1 de fevereiro de 2026.</p>
+        </div>
+    );
+};
