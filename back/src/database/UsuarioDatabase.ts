@@ -1,8 +1,9 @@
+import { ENV } from "../config/constant";
 import { UsuarioModel, UsuarioType } from "../models/UsuarioModel";
 import { Database } from "./Databases";
 
 export class UsuarioDatabase extends Database {
-  static override tableName = "public.usuarios";
+  static override tableName = `${ENV.DB_SCHEMA}.usuarios`;
   public static async findMany(): Promise<UsuarioModel[]> {
     return await this.findAll<UsuarioType>().then((users) =>
       users.map((user) => new UsuarioModel(user)),

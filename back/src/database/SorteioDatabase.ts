@@ -1,8 +1,9 @@
+import { ENV } from "../config/constant";
 import { SorteioModel, SorteioType } from "../models/SorteioModel";
 import { Database } from "./Databases";
 
 export class SorteioDatabase extends Database {
-  static override tableName = "public.sorteios";
+  static override tableName = `${ENV.DB_SCHEMA}.sorteios`;
   public static async findMany(): Promise<SorteioModel[]> {
     const res = await this.findAll<SorteioType>();
     return res.map((sorteio) => new SorteioModel(sorteio));

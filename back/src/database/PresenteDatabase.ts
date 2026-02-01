@@ -1,8 +1,9 @@
+import { ENV } from "../config/constant";
 import { PresenteModel, PresenteType } from "../models/PresenteModel";
 import { Database } from "./Databases";
 
 export class PresenteDatabase extends Database {
-  static override tableName = "public.presentes";
+  static override tableName = `${ENV.DB_SCHEMA}.presentes`;
 
   public static async create(presente: PresenteModel): Promise<{ id: number }> {
     return await this.insert({
