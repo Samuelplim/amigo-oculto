@@ -33,11 +33,10 @@ export class UsuarioController {
 
   static async create(req: Request, res: Response): Promise<Response> {
     try {
-      const { nome, senha, email } = req.body;
-      console.log("Dados recebidos:", req.body);
-
+      const { name, pasword, email } = req.body;
+      const passwordCrypted = await UserModel.encryptPassword(pasword);
       const novoUsuario = await UsuarioDatabase.create(
-        new UserModel({ name: nome, pasword: senha, email }),
+        new UserModel({ name, pasword: passwordCrypted, email }),
       );
 
       return res.status(201).json(novoUsuario);
